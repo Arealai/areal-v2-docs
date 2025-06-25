@@ -18,9 +18,6 @@ theme:
 
 markdown_extensions:
   - admonition
-  - pymdownx.details
-  - pymdownx.inlinehilite
-  - pymdownx.snippets
 
 plugins:
   - search
