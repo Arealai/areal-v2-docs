@@ -6,17 +6,6 @@ The document processing functionality is the core of the Areal system, enabling 
 
 The document processing flow transforms a single uploaded PDF into multiple classified documents with extracted structured data. This process involves several microservices working together to analyze, classify, and extract information from mortgage documents.
 
-!!! tip "In a hurry?"
-    Jump to the Dockerfile below 👇.
-
-!!! info "Info Title"
-    This is an info box. You can use it to highlight information.
-
-
-???+ note "Click to expand for more details"
-    Here is some additional information that is hidden by default.
-
-
 ### Sequence Diagram
 
 ```mermaid
@@ -59,85 +48,65 @@ sequenceDiagram
 ```
 
 #### Phase 1: Upload Preparation and Initiation
-- User requests pre-signed URLs to upload documents.
-- User uploads PDF(s) directly to S3 using the provided URLs.
-- User tells the system to start processing the uploaded document(s).
+1. User requests pre-signed URLs to upload documents. See [Upload Preparation](https://dev-api.v2.areal.ai/api/v2/docs#/processing/api_views_processing_get_presigned_url)
+2. User uploads PDF(s) directly to S3 using the provided URLs. 
+3. User tells the system to start processing the uploaded document(s). See [Start Processing](https://dev-api.v2.areal.ai/api/v2/docs#/processing/api_views_processing_start_processing)
 
 #### Phase 2: Classification
 - The system analyzes the uploaded PDF(s) and classifies the document types.
 - User receives a real-time notification from the API when classification is complete.
+- See [Classification](classification.md) section for details.
 
 #### Phase 3: Extraction
 - The system extracts structured data from the classified documents.
 - User receives a real-time notification from the API when extraction is complete.
+- See [Extraction](extraction.md) section for details.
 
 #### Phase 4: Finalization
 - User receives an email notification from the API when processing is complete and documents are ready for review.
 
-### Detailed Process Breakdown
+!!! warning "Asynchronous Processing"
+    The entire flow is asynchronous with callback-based communication. So if you are planning to integrate your software with Areal, you need to be prepared to handle the callback.
 
-#### Phase 1: Upload Preparation & Initiation
+## Example Usage
 
-##### Pre-signed URL Request
+```python
+import requests
+from pathlib import Path
 
-- User requests pre-signed URLs for file upload
-- Creates or uses existing UploadSession
-- Generates unique document_id for each file
-- Returns S3 pre-signed URLs with expiration time
+BASE_PATH = Path(__file__).parent
 
-##### File Upload
+# 0. Login
+cookies = ... # get from auth.md
 
-- User uploads PDF directly to S3 using pre-signed URLs
-- Upload handled directly by S3, not through the API
+# 1. Get presigned URLs
+file_names = ['sample.pdf']
+response = requests.post(
+    f'{base_url}/processing/presigned_url/',
+    # params={'upload_session_id': upload_session_id}, -> for uploading to same session
+    json={'file_names': file_names},
+    cookies=cookies,
+)
+presigned_urls = response.json()['presigned_urls']
+upload_session_id = response.json()['upload_session_id']
 
-##### Start Processing
+# 2. Upload to S3
+response = requests.post(
+    presigned_url['url'],
+    data=presigned_url['fields'],
+    files={'file': (BASE_PATH / 'sample.pdf').read_bytes()},
+)
+if response.status_code != 204:
+    raise Exception(f'Failed to upload to S3: {response.status_code}')
 
-- User triggers processing after successful upload
-- API validates PDF exists in S3
-- Creates initial Document record with "unclassified" template
-- Document status: **preparing**
-
-
-#### Phase 2: Classification
-
-##### Identifies different document types within the PDF
-
-- Detects page templates and boundaries
-- May split single PDF into multiple logical documents
-- Processes visual elements, text, and layout
-- See [Classification](classification.md) for more details.
-
-#### Phase 3: Data Extraction
-
-##### Extracts structured data from the classified documents
-
-- Extracts structured data based on template components
-- Generates confidence scores for extracted values
-- Generates parent-child relationships for grouped data
-- See [Extraction](extraction.md) for more details.
-
-#### Phase 4: Finalization
-
-- Creates final structured documents
-    - Links extracted data to appropriate templates
-    - Establishes component relationships
-    - Sets document status to **completed**
-    - Prepares data for frontend consumption
-
-- Completes the processing workflow
-    - Sends email notification to user
-    - Updates WebSocket clients with completion status
-    - Updates loan information if applicable
-    - Triggers any configured automation (like Copilot)
-     - See [Status Tracking](status.md) for more details.
-
-### Key Characteristics
-
-- **Asynchronous Processing**: The entire flow is asynchronous with callback-based communication
-- **Microservice Architecture**: Classification and extraction are handled by separate services
-- **Multiple Documents**: A single PDF can result in multiple classified documents
-- **Template-Based**: Each document is associated with a template that defines expected components
-- **Real-time Updates**: WebSocket notifications keep the frontend updated throughout the process
-- **Error Handling**: Comprehensive error handling with email notifications for failures
-- **Scalable**: Services can process multiple documents concurrently
-
+# 3. Start processing flow
+process_response = requests.post(
+    f'{base_url}/processing/upload/',
+    json={
+        'upload_session_id': upload_session_id,
+        'document_id': document_id,
+        'file_name': file_name,
+    },
+    cookies=cookies,
+)
+```
