@@ -1,6 +1,7 @@
 # Status Tracking
 
 Documents progress through these statuses:
+
 - `pending`: Initial state after creation
 - `preparing`: PDF uploaded, ready for classification
 - `processing`: Classification complete, extraction in progress

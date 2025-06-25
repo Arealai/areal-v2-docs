@@ -1,10 +1,21 @@
-## Document Processing Flow
+# Document Processing Flow
 
 The document processing functionality is the core of the Areal system, enabling users to upload PDF documents and automatically extract structured data through AI-powered classification and extraction services.
 
-### High-Level Overview
+## High-Level Overview
 
 The document processing flow transforms a single uploaded PDF into multiple classified documents with extracted structured data. This process involves several microservices working together to analyze, classify, and extract information from mortgage documents.
+
+!!! tip "In a hurry?"
+    Jump to the Dockerfile below 👇.
+
+!!! info "Info Title"
+    This is an info box. You can use it to highlight information.
+
+
+???+ note "Click to expand for more details"
+    Here is some additional information that is hidden by default.
+
 
 ### Sequence Diagram
 
@@ -94,6 +105,7 @@ sequenceDiagram
 - Detects page templates and boundaries
 - May split single PDF into multiple logical documents
 - Processes visual elements, text, and layout
+- See [Classification](classification.md) for more details.
 
 #### Phase 3: Data Extraction
 
@@ -102,21 +114,22 @@ sequenceDiagram
 - Extracts structured data based on template components
 - Generates confidence scores for extracted values
 - Generates parent-child relationships for grouped data
-
+- See [Extraction](extraction.md) for more details.
 
 #### Phase 4: Finalization
 
-8. **Document Generation**: Creates final structured documents
+- Creates final structured documents
     - Links extracted data to appropriate templates
     - Establishes component relationships
     - Sets document status to **completed**
     - Prepares data for frontend consumption
 
-9. **Notifications & Updates**: Completes the processing workflow
+- Completes the processing workflow
     - Sends email notification to user
     - Updates WebSocket clients with completion status
     - Updates loan information if applicable
     - Triggers any configured automation (like Copilot)
+     - See [Status Tracking](status.md) for more details.
 
 ### Key Characteristics
 
@@ -127,26 +140,4 @@ sequenceDiagram
 - **Real-time Updates**: WebSocket notifications keep the frontend updated throughout the process
 - **Error Handling**: Comprehensive error handling with email notifications for failures
 - **Scalable**: Services can process multiple documents concurrently
-
-### Status Tracking
-
-Documents progress through these statuses:
-- `pending`: Initial state after creation
-- `preparing`: PDF uploaded, ready for classification
-- `processing`: Classification complete, extraction in progress
-- `completed`: Full processing complete, ready for review
-- `failed`: Processing encountered an error
-
-### Integration Points
-
-The document processing system integrates with:
-- **S3**: For file storage and management
-- **Classification Service**: AI-powered document analysis
-- **Extraction Service**: OCR and structured data extraction
-- **WebSocket Service**: Real-time frontend notifications
-- **Email Service**: User notifications
-- **Gateway Services**: Integration with external systems (Encompass, RamQuest)
-- **Copilot Service**: Automated workflows and AI assistance
-
-
 
