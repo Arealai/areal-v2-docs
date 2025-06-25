@@ -19,8 +19,8 @@ plugins:
   - mermaid2
 
 nav:
-  - Home: [index.md, api.md, support.md]
-  - Accounts: accounts/index.md
+  - Home: [index.md]
+  - Accounts: [accounts/auth.md, accounts/profiles.md]
   - Processing:
       [
         processing/index.md,
