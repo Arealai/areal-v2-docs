@@ -1,0 +1,28 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "APIV2-Debug",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/app/manage.py",
+      "args": [
+        "runserver"
+      ],
+      "django": true,
+      "cwd": "${workspaceFolder}/app",
+      "justMyCode": false
+    },
+    {
+      "name": "APIV2-Test-Debug",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": [
+        "api/tests/test_partial_ocr.py"
+      ],
+      "django": true,
+      "cwd": "${workspaceFolder}/app",
+    },
+  ]
+}

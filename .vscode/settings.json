@@ -1,0 +1,14 @@
+{
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.expand": false,
+    "explorer.fileNesting.patterns": {
+        "Dockerfile": "docker*, .dockerignore, Makefile",
+        "pyproject.toml": "uv.lock, .coverage, .env*, .gitignore, README.md, mkdocs.yml, docs/*, .pre-commit-config.yaml",
+        "locustfile.py": "locust.conf"
+    },
+    "python.testing.pytestArgs": [
+        "app"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}
