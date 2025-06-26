@@ -33,6 +33,4 @@ nav:
         processing/classification.md,
         processing/extraction.md,
       ]
-  - Gateways: gateways/index.md
-  - CDBalancer: cdbalancer/index.md
-  - Copilot: copilot/index.md
+  - Migration Guide: [migration/index.md, migration/examples.md]
