@@ -5,6 +5,14 @@ If you are a customer of Areal V1, this guide is designed to help you migrate to
 !!! warning "Areal Dashboard"
     For **Areal Dashboard** users, you can simply go into the new dashboard and start using it, guide is for API integrations with Areal
 
+## Creating Your Organization & Users in V2
+
+We added a simple yet powerful **Organization Management** feature to V2!
+
+You can decide **Organization Administrator** roles amongst your users and this role can manage your organization.
+Please contact Areal to create your Administrator, which then invites users to their organization to assamble their team. We have further fine-grained roles that you can establish within you team. See [Profiles Docs](../accounts/profiles.md) for details.
+
+
 ## Authentication
 
 We reshaped the authentication mechanism in V2 with a focus on industry-standard security pratices!
