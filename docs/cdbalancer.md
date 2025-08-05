@@ -2,32 +2,23 @@
 
 CDBalancer takes 2 processed Closing Disclosure documents and *balances* them.
 
-It works asycronously, meaning that when you call the CDBalancer over the API it will return a *request_id* that you can use to track the status of the request.
-
-While manual tracking is possible, websocket channel provides live updates, hence recommended.
-
-See [Status Tracking](processing/status.md) for more details.
+!!! warning "Asynchronous CDBalancer"
+    The entire flow is asynchronous, meaning that when you start the cdbalancer we will respond with a __request_id__ which you can use to track of the status of the cdbalancer request. 
+    
+    While users of Areal Dashboard can easily see the live status of their cdbalancer requests.
+    
+    So if you are planning to integrate our API, you can use our WebSocket API or manually poll the status of the cdbalancer request.
+    
+    See [Status Tracking](processing/status.md) for more details.
 
 ## Example Usage
 
-```py title="CDBalancer Flow" linenums="1"
+```py title="CDBalancer Example Usage" linenums="1"
 import requests
-from pathlib import Path
 
-BASE_PATH = Path(__file__).parent
 BASE_URL = "http://dev-api.v2.areal.ai/api/v2"
 
 # 0. Login - details in Authentication section
-login_response = requests.post(f"{BASE_URL}/accounts/login/")
-client = requests.Session()
-client.cookies.update(  # (1)
-    {
-        "access_token": login_response.cookies["access_token"],
-        "refresh_token": login_response.cookies["refresh_token"],
-    }
-)
-# this client is now authenticated for the duration of access_token
-# after that you can refresh it using the /accounts/refresh endpoint
 
 # 1. Process Documents that you are interested in balancing
 # -- For this, please refer to the Processing section
