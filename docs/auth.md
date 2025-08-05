@@ -1,17 +1,11 @@
 # Authentication
 
-Areal API uses a secure, modern authentication system to ensure that only authorized users can access sensitive resources. Our approach follows industry best practices, prioritizing both user experience and robust security.
+Areal API support multiple authentication mechanisms:
 
-## Key Principles
-
-- **Secure Login:** Credentials are never stored or transmitted in plain text.
-- **Token-Based Authentication:** Access and refresh tokens are used to manage sessions securely.
-- **Cookie Usage:** Secure, HTTP-only cookies are used to store tokens, protecting them from XSS attacks.
-- **Session Refresh:** Seamless token refresh ensures uninterrupted user experience.
-- **Logout:** Users can securely terminate their sessions at any time.
-- **Best-Practice Security:** All authentication flows use encryption, secure cookie flags, and protection against common web vulnerabilities.
-
----
+- **JWT over cookies**   (recommended)
+- **JWT over Bearer**
+- **ApiKey over headers** (on-demand)
+- **MFA over Authenticator App** (Google Authenticator, PingID, Authy, etc.)
 
 ## Authentication Flow
 
@@ -53,21 +47,40 @@ sequenceDiagram
     end
 ```
 
----
+## Example Usage
 
-## Video Walkthrough
+```py title="Login" linenums="1"
+import requests
 
-> _[Insert your video here to demonstrate the authentication flow in action.]_
+BASE_URL = 'http://dev-api.v2.areal.ai/api/v2'
 
----
+# 0. Login - details in Authentication section
+login_response = requests.post(f'{BASE_URL}/accounts/login/', {
+    'username': 'test@areal.ai',
+    'password': 'test123',
+})
+client = requests.Session()
+client.cookies.update(
+    {
+        'access_token': login_response.cookies['access_token'],
+        'refresh_token': login_response.cookies['refresh_token'],
+    }
+)
+# this client is now authenticated for the duration of access_token
+# after that you can refresh it using the /accounts/refresh endpoint
+```
+
+
+
 
 ## Security Highlights
 
-- **All tokens are stored in secure, HTTP-only cookies** to prevent client-side access.
-- **Tokens are short-lived** and automatically refreshed to minimize risk.
-- **Logout fully invalidates the session** and clears all authentication cookies.
-- **All communication is encrypted** using HTTPS.
-- **Industry-standard libraries and protocols** are used for authentication and session management.
+- **Secure Login:** Credentials are never stored or transmitted in plain text.
+- **Token-Based Authentication:** Access and refresh tokens are used to manage sessions securely.
+- **Cookie Usage:** Secure, HTTP-only cookies are used to store tokens, protecting them from XSS attacks.
+- **Session Refresh:** Seamless token refresh ensures uninterrupted user experience.
+- **Logout:** Users can securely terminate their sessions at any time.
+- **Best-Practice Security:** All authentication flows use encryption, secure cookie flags, and protection against common web vulnerabilities.
 
 ---
 

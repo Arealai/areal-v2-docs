@@ -13,6 +13,7 @@ client.cookies.update(  # (1)
         "refresh_token": login_response.cookies["refresh_token"],
     }
 )
+
 # this client is now authenticated for the duration of access_token
 # after that you can refresh it using the /accounts/refresh endpoint
 
