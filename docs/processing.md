@@ -16,32 +16,32 @@ sequenceDiagram
     participant AI as 🤖 AI Services
 
     %% Phase 1: Upload Preparation and Initiation
-    rect rgb(200,200,255)
-    User->>+API: Request upload URLs
-    API-->>-User: Pre-signed URLs + session_id
-    User->>+S3: Upload PDF
-    S3-->>-User: Upload confirmedc
-    User->>+API: Start processing
-    API-->>-User: Processing started
+    rect rgb(191, 223, 255)
+        User->>+API: Request upload URLs
+        API-->>-User: Pre-signed URLs + session_id
+        User->>+S3: Upload PDF
+        S3-->>-User: Upload confirmed
+        User->>+API: Start processing
+        API-->>-User: Processing started
     end
 
     %% Phase 2: Classification
-    rect rgb(220,255,220)
-    API->>AI: Send for classification
-    AI-->>API: Classification results
-    API->>User: Real-time update (classification done)
+    rect rgb(200, 255, 200)
+        API->>AI: Send for classification
+        AI-->>API: Classification results
+        API->>User: Real-time update (classification done)
     end
 
-    %% Phase 3: Extraction
-    rect rgb(255,240,200)
-    API->>AI: Send for extraction
-    AI-->>API: Extraction results
-    API->>User: Real-time update (extraction done)
+    %% Phase 3: Extraction  
+    rect rgb(255, 235, 200)
+        API->>AI: Send for extraction
+        AI-->>API: Extraction results
+        API->>User: Real-time update (extraction done)
     end
 
     %% Phase 4: Finalization
-    rect rgb(255,220,220)
-    API->>User: Email notification (processing completed)
+    rect rgb(255, 200, 200)
+        API->>User: Email notification (processing completed)
     end
 
     Note over User: Multiple documents ready with extracted data
@@ -70,43 +70,51 @@ sequenceDiagram
 
 ## Example Usage
 
-```python
+```py title="Processing Flow" linenums="1"
 import requests
 from pathlib import Path
 
 BASE_PATH = Path(__file__).parent
+BASE_URL = 'http://dev-api.v2.areal.ai/api/v2'
 
-# 0. Login
-cookies = ... # get from auth.md
+# 0. Login - details in Authentication section
+login_response = requests.post(f'{BASE_URL}/accounts/login/')
+client = requests.Session()
+client.cookies.update( # (1)
+    {
+        'access_token': login_response.cookies['access_token'],
+        'refresh_token': login_response.cookies['refresh_token'],
+    }
+)
+# this client is now authenticated for the duration of access_token
+# after that you can refresh it using the /accounts/refresh endpoint
 
-# 1. Get presigned URLs
+# 1. Get Pre-Signed URL's for a secure & fast upload channel
 file_names = ['sample.pdf']
-response = requests.post(
-    f'{base_url}/processing/presigned_url/',
-    # params={'upload_session_id': upload_session_id}, -> for uploading to same session
+presigned_url_response = client.post(
+    f'{BASE_URL}/processing/presigned_url/',
+    # params={'upload_session_id': upload_session_id}, -> for uploading to a specific session
     json={'file_names': file_names},
-    cookies=cookies,
-)
-presigned_urls = response.json()['presigned_urls']
-upload_session_id = response.json()['upload_session_id']
+).json()
 
-# 2. Upload to S3
-response = requests.post(
-    presigned_url['url'],
-    data=presigned_url['fields'],
-    files={'file': (BASE_PATH / 'sample.pdf').read_bytes()},
-)
-if response.status_code != 204:
-    raise Exception(f'Failed to upload to S3: {response.status_code}')
+# 2. Upload to your PDF's to the PreSignedURL's
+for file_name, presigned_url in zip(
+    file_names, presigned_url_response['presigned_urls']
+):
+    upload_response = requests.post(
+        presigned_url['url'],
+        data=presigned_url['fields'],
+        files={'file': (BASE_PATH / file_name).read_bytes()},
+    )
 
-# 3. Start processing flow
-process_response = requests.post(
-    f'{base_url}/processing/upload/',
-    json={
-        'upload_session_id': upload_session_id,
-        'document_id': document_id,
-        'file_name': file_name,
-    },
-    cookies=cookies,
-)
+    # 3. Start processing flow
+    process_response = client.post(
+        f'{BASE_URL}/processing/upload/',
+        json={
+            'upload_session_id': presigned_url_response['upload_session_id'],
+            'document_id': presigned_url['document_id'],
+            'file_name': file_name,
+        },
+    )
+
 ```

@@ -1,4 +1,5 @@
 site_name: "Areal V2 Documentation"
+site_url: "https://docs.v2.areal.ai"
 
 theme:
   name: "material"
@@ -16,21 +17,39 @@ theme:
   logo: assets/logo.png
   favicon: assets/logo.png
 
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
 markdown_extensions:
   - admonition
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
 
 plugins:
   - search
-  - mermaid2
 
 nav:
   - Home: [index.md]
   - Accounts: [accounts/auth.md, accounts/profiles.md]
-  - Processing:
-      [
-        processing/index.md,
-        processing/status.md,
-        processing/classification.md,
-        processing/extraction.md,
-      ]
+  - Processing: [processing.md]
+  - CDBalancer: [cdbalancer.md]
   - Migration Guide: [migration/index.md, migration/examples.md]
