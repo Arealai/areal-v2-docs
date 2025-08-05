@@ -1,10 +1,7 @@
-# Document Processing Flow
+# Document Processing
 
-The document processing functionality is the core of the Areal system, enabling users to upload PDF documents and automatically extract structured data through AI-powered classification and extraction services.
-
-## High-Level Overview
-
-The document processing flow transforms a single uploaded PDF into multiple classified documents with extracted structured data. This process involves several microservices working together to analyze, classify, and extract information from mortgage documents.
+The document processing functionality is the core of the Areal system. 
+With our powerful AI models, we enable users to upload large mortgage loans in PDF format and get classified documents with structured extracted data.
 
 ### Sequence Diagram
 
@@ -47,30 +44,18 @@ sequenceDiagram
     Note over User: Multiple documents ready with extracted data
 ```
 
-#### Phase 1: Upload Preparation and Initiation
-1. User requests pre-signed URLs to upload documents. See [Upload Preparation](https://dev-api.v2.areal.ai/api/v2/docs#/processing/api_views_processing_get_presigned_url)
-2. User uploads PDF(s) directly to S3 using the provided URLs. 
-3. User tells the system to start processing the uploaded document(s). See [Start Processing](https://dev-api.v2.areal.ai/api/v2/docs#/processing/api_views_processing_start_processing)
-
-#### Phase 2: Classification
-- The system analyzes the uploaded PDF(s) and classifies the document types.
-- User receives a real-time notification from the API when classification is complete.
-- See [Classification](classification.md) section for details.
-
-#### Phase 3: Extraction
-- The system extracts structured data from the classified documents.
-- User receives a real-time notification from the API when extraction is complete.
-- See [Extraction](extraction.md) section for details.
-
-#### Phase 4: Finalization
-- User receives an email notification from the API when processing is complete and documents are ready for review.
-
 !!! warning "Asynchronous Processing"
-    The entire flow is asynchronous with callback-based communication. So if you are planning to integrate your software with Areal, you need to be prepared to handle the callback.
+    The entire flow is asynchronous, meaning that when you start the processing we will respond with a __request_id__ which you can use to track of the status of the processing. 
+    
+    While users of Areal Dashboard can easily see the live status of their documents.
+    
+    So if you are planning to integrate our API, you can use our WebSocket API or manually poll the status of the processing.
+    
+    See [Status Tracking](status.md) for more details.
 
-## Example Usage
+## Example Usage
 
-```py title="Processing Flow" linenums="1"
+```py title="Start Processing" linenums="1"
 import requests
 from pathlib import Path
 

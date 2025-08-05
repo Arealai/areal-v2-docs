@@ -1,11 +1,12 @@
-# Closing Disclosure Balancing Flow
+# Closing Disclosure Balancing
 
 CDBalancer takes 2 processed Closing Disclosure documents and *balances* them.
 
-It works asycronously, meaning that when you call the CDBalancer over the API
-it will return a *request_id* that you can use to track the status of the requset
+It works asycronously, meaning that when you call the CDBalancer over the API it will return a *request_id* that you can use to track the status of the request.
 
-While manual tracking is possible, websocket channel provides live updates, hence recommended
+While manual tracking is possible, websocket channel provides live updates, hence recommended.
+
+See [Status Tracking](status.md) for more details.
 
 ## Example Usage
 
