@@ -51,7 +51,7 @@ sequenceDiagram
     
     So if you are planning to integrate our API, you can use our WebSocket API or manually poll the status of the processing.
     
-    See [Status Tracking](status.md) for more details.
+    See [Status Tracking](processing/status.md) for more details.
 
 ## Example Usage
 
@@ -69,7 +69,9 @@ BASE_URL = 'http://dev-api.v2.areal.ai/api/v2'
 file_names = ['sample.pdf']
 presigned_url_response = client.post(
     f'{BASE_URL}/processing/presigned_url/',
-    # params={'upload_session_id': upload_session_id}, -> for uploading to a specific session
+    # NOTE: you can upload to an existing session by passing the upload_session_id
+    # but we recommend creating a new session for each loan
+    # params={'upload_session_id': upload_session_id},
     json={'file_names': file_names},
 ).json()
 

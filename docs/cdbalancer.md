@@ -6,7 +6,7 @@ It works asycronously, meaning that when you call the CDBalancer over the API it
 
 While manual tracking is possible, websocket channel provides live updates, hence recommended.
 
-See [Status Tracking](status.md) for more details.
+See [Status Tracking](processing/status.md) for more details.
 
 ## Example Usage
 

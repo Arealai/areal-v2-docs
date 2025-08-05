@@ -50,6 +50,13 @@ plugins:
 nav:
   - Home: [index.md]
   - Accounts: [auth.md]
-  - Processing: [processing.md, status.md]
+  - Processing:
+      [
+        processing/processing.md,
+        processing/status.md,
+        processing/webhooks.md,
+        processing/email.md,
+      ]
+  - Session: [sessions.md, loan_info.md]
   - CDBalancer: [cdbalancer.md]
   - Migration Guide: [migration/index.md, migration/examples.md]

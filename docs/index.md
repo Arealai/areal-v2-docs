@@ -7,6 +7,7 @@ For techinal details see [API-Documentation](https://dev-api.v2.areal.ai/api/v2/
 
 Suggested reading order:
 
-1. [Authentication](accounts/auth.md): How to authenticate and authorize users to access the API.
-2. [Processing](processing.md): How to process documents and extract structured data.
-5. [CDBalancer](cdbalancer/index.md): How to balance Closing Disclosure documents
+1. [Authentication](auth.md): How to authenticate and authorize users to access the API.
+2. [Processing](processing/processing.md): How to process documents and extract structured data.
+3. [Upload Sessions](sessions.md): How to manage upload sessions and documents.
+4. [CDBalancer](cdbalancer.md): How to balance Closing Disclosure documents
