@@ -56,6 +56,7 @@ nav:
         processing/status.md,
         processing/webhooks.md,
         processing/email.md,
+        processing/annotations.md,
       ]
   - Session: [sessions.md, loan_info.md]
   - CDBalancer: [cdbalancer.md]
