@@ -14,8 +14,30 @@ You can also duplicate the documents for easier organization.
 
 
 
+
+
 ## Downloading Indexed Documents
 
+### Automatic Grouping
+
+We provide an easy to use API to download the indexed documents in a zip file.
+When `group_by` is set to `index_id`, we will put the documents in the same index into a folder.
+
+```py title="Automatic Grouping" linenums="1"
+import requests  # noqa
+
+SESSION_ID = '66878f5e-c609-4796-9fc2-ecc6ae377cac'
+
+response = client.post(
+    f'{BASE_URL}/sessions/{SESSION_ID}/download/', params={'group_by': 'index_id'}
+)
+with open('documents.zip', 'wb') as f:
+    f.write(response.content)
+
+print('✅ Zip file downloaded and saved as documents.zip')
+```
+
+### Manual Grouping
 You can easily download the indexed documents by filtering the documents by the index you want to download.
 
 ```py title="Downloading Indexed Documents" linenums="1"
