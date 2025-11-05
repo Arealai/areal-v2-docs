@@ -15,6 +15,11 @@ You can also duplicate the documents for easier organization.
 
 
 
+## Document Duplicatation
+
+When you click on the "Duplicate" button for each document, we will create a new document with the same content.
+We will add an indicator to reference the original document.
+And you will be able to move this newly created document to a new index
 
 ## Downloading Indexed Documents
 
