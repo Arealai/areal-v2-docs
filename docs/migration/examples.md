@@ -2,41 +2,40 @@
 
 ## Authentication
 
-```python
-import requests
+=== "C#"
 
-base_url = "https://dev-api.v2.areal.ai/api/v2"
-session = requests.Session()
+    ```csharp title="Login" linenums="1"
+    --8<-- "code_samples/auth/c#/login.cs"
+    ```
 
-# 1. Login
-login_payload = {
-    "email": "your@email.com",
-    "password": "your_password"
-}
-login_response = session.post(f"{base_url}/accounts/login/", json=login_payload)
-login_response.raise_for_status()
-# Tokens are set in secure HTTP-only cookies automatically
-print("Login successful!", login_response.cookies)
+=== "Java"
 
-# 2. Get Current User (Me)
-me_response = session.get(f"{base_url}/accounts/me/")
-me_response.raise_for_status()
-print("Current user info:", me_response.json())
+    ```java title="Login" linenums="1"
+    --8<-- "code_samples/auth/java/login.java"
+    ```
 
-# 3. Refresh Session
-refresh_response = session.post(f"{base_url}/accounts/refresh/")
-refresh_response.raise_for_status()
-print("Session refreshed!", refresh_response.cookies)
+=== "Python"
 
-# 4. Logout
-logout_response = session.post(f"{base_url}/accounts/logout/")
-logout_response.raise_for_status()
-print("Logged out.")
-```
+    ```py title="Login" linenums="1"
+    --8<-- "code_samples/auth/python/login.py"
+    ```
 
 ## Document Processing
 
-```python
+=== "C#"
 
+    ```csharp title="Start Processing" linenums="1"
+    --8<-- "code_samples/processing/c#/start_processing.cs"
+    ```
 
-```
+=== "Java"
+
+    ```java title="Start Processing" linenums="1"
+    --8<-- "code_samples/processing/java/start_processing.java"
+    ```
+
+=== "Python"
+
+    ```py title="Start Processing" linenums="1"
+    --8<-- "code_samples/processing/python/start_processing.py"
+    ```

@@ -13,19 +13,24 @@ theme:
     - content.code.copy
     - content.code.select
     - content.code.annotate
+    - content.tabs
 
   logo: assets/logo.png
   favicon: assets/logo.png
+  extra_css:
+    - stylesheets/extra.css
 
   palette:
     # Palette toggle for light mode
     - scheme: default
+      primary: '#0C6FFF'
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
 
     # Palette toggle for dark mode
     - scheme: slate
+      primary: '#0C6FFF'
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
@@ -37,12 +42,15 @@ markdown_extensions:
       line_spans: __span
       pygments_lang_class: true
   - pymdownx.inlinehilite
-  - pymdownx.snippets
+  - pymdownx.snippets:
+      base_path: docs
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
 
 plugins:
   - search
