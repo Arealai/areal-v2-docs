@@ -5,7 +5,7 @@ BASE_PATH = Path(__file__).parent
 BASE_URL = 'http://dev-api.v2.areal.ai/api/v2'
 
 # 0. Login - details in Authentication section
-# See code_samples/auth/python/login.py for authentication
+...
 
 # 1. Get Pre-Signed URL's for a secure & fast upload channel
 file_names = ['sample.pdf']
@@ -17,10 +17,10 @@ presigned_url_response = client.post(
     json={'file_names': file_names},
 ).json()
 
+# 2. Upload to your PDF's to the PreSignedURL's
 for file_name, presigned_url in zip(
     file_names, presigned_url_response['presigned_urls']
 ):
-    # 2. Upload to your PDF's to the PreSignedURL's
     upload_response = requests.post(
         presigned_url['url'],
         data=presigned_url['fields'],

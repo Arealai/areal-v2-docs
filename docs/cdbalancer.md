@@ -13,21 +13,20 @@ CDBalancer takes 2 processed Closing Disclosure documents and *balances* them.
 
 ## Example Usage
 
-```py title="CDBalancer Example Usage" linenums="1"
-import requests
+=== "Python"
 
-BASE_URL = "http://dev-api.v2.areal.ai/api/v2"
+    ```py title="CDBalancer Example Usage" linenums="1"
+    --8<-- "code_samples/cdbalancer/python/cdbalancer_example.py"
+    ```
 
-# 0. Login - details in Authentication section
+=== "C#"
 
-# 1. Process Documents that you are interested in balancing
-# -- For this, please refer to the Processing section
+    ```csharp title="CDBalancer Example Usage" linenums="1"
+    --8<-- "code_samples/cdbalancer/c#/cdbalancer_example.cs"
+    ```
 
-# 2. Call CDBalancer API using existing processed documents
-cdbalancer_response = client.post(
-    url=f"{BASE_URL}/cdbalancer/",
-    json={"document_id_1": "doc1_id", "document_id_2": "doc2_id"},
-    headers={"Content-Type": "application/json"},
-)
-request_id = cdbalancer_response.json()["request_id"]
-```
+=== "Java"
+
+    ```java title="CDBalancer Example Usage" linenums="1"
+    --8<-- "code_samples/cdbalancer/java/cdbalancer_example.java"
+    ```
