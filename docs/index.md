@@ -11,3 +11,5 @@ Suggested reading order:
 2. [Processing](processing/processing.md): How to process documents and extract structured data.
 3. [Upload Sessions](sessions.md): How to manage upload sessions and documents.
 4. [CDBalancer](cdbalancer.md): How to balance Closing Disclosure documents
+
+See the [Changelog](changelog.md) for notable platform and documentation updates.

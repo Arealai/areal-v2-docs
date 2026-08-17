@@ -18,3 +18,8 @@
   --md-primary-fg-color--dark: #0055CC;
   --md-accent-fg-color: #0C6FFF;
 }
+
+.md-typeset h2[id^="20"] {
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+  padding-bottom: 0.3em;
+}

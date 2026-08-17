@@ -17,8 +17,6 @@ theme:
 
   logo: assets/logo.png
   favicon: assets/logo.png
-  extra_css:
-    - stylesheets/extra.css
 
   palette:
     # Palette toggle for light mode
@@ -35,7 +33,11 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
 
+extra_css:
+  - stylesheets/extra.css
+
 markdown_extensions:
+  - attr_list
   - admonition
   - pymdownx.highlight:
       anchor_linenums: true
@@ -70,3 +72,4 @@ nav:
   - Session: [sessions.md, loan_info.md]
   - CDBalancer: [cdbalancer.md]
   - Migration Guide: [migration/index.md, migration/examples.md]
+  - Changelog: [changelog.md]
