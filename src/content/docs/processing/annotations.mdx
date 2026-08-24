@@ -1,0 +1,32 @@
+---
+title: Annotation API Documentation
+description: Detect signers, notaries, and witnesses on documents.
+---
+
+import { Code, TabItem, Tabs } from '@astrojs/starlight/components';
+import annotations_python_annotation_api from '../../../code_samples/annotations/python/annotation_api.py?raw';
+import annotations_csharp_annotation_api from '../../../code_samples/annotations/csharp/annotation_api.cs?raw';
+import annotations_java_annotation_api from '../../../code_samples/annotations/java/annotation_api.java?raw';
+
+The API supports detecting the following entities:
+
+- **Signers** (multiple entities)
+- **Notary** (single entity)
+- **Witnesses** (multiple entities)
+
+
+<Tabs>
+  <TabItem label="Python">
+    <Code code={annotations_python_annotation_api} lang="python" title="Annotation API" />
+  </TabItem>
+  <TabItem label="C#">
+    <Code code={annotations_csharp_annotation_api} lang="csharp" title="Annotation API" />
+  </TabItem>
+  <TabItem label="Java">
+    <Code code={annotations_java_annotation_api} lang="java" title="Annotation API" />
+  </TabItem>
+</Tabs>
+
+:::note[LoanInfo Model]
+See `https://dev-api.v2.areal.ai/api/v2/docs#model/notarycamloaninfo` for the full model definition.
+:::

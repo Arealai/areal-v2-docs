@@ -1,0 +1,67 @@
+---
+title: Indexing API
+description: Group, duplicate, and download indexed documents.
+---
+
+import { Code, TabItem, Tabs } from '@astrojs/starlight/components';
+import indexing_python_automatic_grouping from '../../../code_samples/indexing/python/automatic_grouping.py?raw';
+import indexing_csharp_automatic_grouping from '../../../code_samples/indexing/csharp/automatic_grouping.cs?raw';
+import indexing_java_automatic_grouping from '../../../code_samples/indexing/java/automatic_grouping.java?raw';
+import indexing_python_downloading_indexed_documents from '../../../code_samples/indexing/python/downloading_indexed_documents.py?raw';
+import indexing_csharp_downloading_indexed_documents from '../../../code_samples/indexing/csharp/downloading_indexed_documents.cs?raw';
+import indexing_java_downloading_indexed_documents from '../../../code_samples/indexing/java/downloading_indexed_documents.java?raw';
+
+We support Indexing API for grouping your documents in a custom manner in ArealAI.
+If your organization is using this feature, we will group your processed documents into your desired index format.
+
+## Example Views
+
+### Manage View
+
+In ManageView you can move around the final documents within or across the indexes.
+You can also duplicate the documents for easier organization.
+
+![Example Manage View](../assets/indexing.png)
+
+
+
+
+## Document Duplicatation
+
+When you click on the "Duplicate" button for each document, we will create a new document with the same content.
+We will add an indicator to reference the original document.
+And you will be able to move this newly created document to a new index
+
+## Downloading Indexed Documents
+
+### Automatic Grouping
+
+We provide an easy to use API to download the indexed documents in a zip file.
+When `group_by` is set to `index_id`, we will put the documents in the same index into a folder.
+
+<Tabs>
+  <TabItem label="Python">
+    <Code code={indexing_python_automatic_grouping} lang="python" title="Automatic Grouping" />
+  </TabItem>
+  <TabItem label="C#">
+    <Code code={indexing_csharp_automatic_grouping} lang="csharp" title="Automatic Grouping" />
+  </TabItem>
+  <TabItem label="Java">
+    <Code code={indexing_java_automatic_grouping} lang="java" title="Automatic Grouping" />
+  </TabItem>
+</Tabs>
+
+### Manual Grouping
+You can easily download the indexed documents by filtering the documents by the index you want to download.
+
+<Tabs>
+  <TabItem label="Python">
+    <Code code={indexing_python_downloading_indexed_documents} lang="python" title="Downloading Indexed Documents" />
+  </TabItem>
+  <TabItem label="C#">
+    <Code code={indexing_csharp_downloading_indexed_documents} lang="csharp" title="Downloading Indexed Documents" />
+  </TabItem>
+  <TabItem label="Java">
+    <Code code={indexing_java_downloading_indexed_documents} lang="java" title="Downloading Indexed Documents" />
+  </TabItem>
+</Tabs>

@@ -1,0 +1,32 @@
+---
+title: LoanInfo API
+description: Get a consolidated LoanInfo view of a processed mortgage loan.
+---
+
+import { Code, TabItem, Tabs } from '@astrojs/starlight/components';
+import loan_info_python_get_loan_infos from '../../code_samples/loan_info/python/get_loan_infos.py?raw';
+import loan_info_csharp_get_loan_infos from '../../code_samples/loan_info/csharp/get_loan_infos.cs?raw';
+import loan_info_java_get_loan_infos from '../../code_samples/loan_info/java/get_loan_infos.java?raw';
+
+The LoanInfo API allows you to get a consolidated view of a mortgage loan.
+
+After you processed your document with our API, you can both inspect the extracted data for each document
+or you can get `LoanInfo` for the entire upload session.
+
+:::note[Triangulation of LoanInfo]
+We automatically triangulate the LoanInfo from each document in the session, so you don't need to call an API to get the LoanInfo.
+:::
+
+## Example Usage
+
+<Tabs>
+  <TabItem label="Python">
+    <Code code={loan_info_python_get_loan_infos} lang="python" title="Get Loan Infos" />
+  </TabItem>
+  <TabItem label="C#">
+    <Code code={loan_info_csharp_get_loan_infos} lang="csharp" title="Get Loan Infos" />
+  </TabItem>
+  <TabItem label="Java">
+    <Code code={loan_info_java_get_loan_infos} lang="java" title="Get Loan Infos" />
+  </TabItem>
+</Tabs>

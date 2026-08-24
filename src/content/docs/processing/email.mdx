@@ -1,0 +1,67 @@
+---
+title: Email Notifications & Processing
+description: Configure email notifications and process documents over email.
+---
+
+import { Code, TabItem, Tabs } from '@astrojs/starlight/components';
+import email_python_configure_email_notifications from '../../../code_samples/email/python/configure_email_notifications.py?raw';
+import email_csharp_configure_email_notifications from '../../../code_samples/email/csharp/configure_email_notifications.cs?raw';
+import email_java_configure_email_notifications from '../../../code_samples/email/java/configure_email_notifications.java?raw';
+import email_python_processing_over_email from '../../../code_samples/email/python/processing_over_email.py?raw';
+import email_csharp_processing_over_email from '../../../code_samples/email/csharp/processing_over_email.cs?raw';
+import email_java_processing_over_email from '../../../code_samples/email/java/processing_over_email.java?raw';
+
+We support both event-based email notifications and document upload over email.
+
+## Email Notifications
+
+We support email notifications for document processing.
+
+You can configure email notifications for the following events:
+
+- Document Processing
+- CDBalancer
+- Copilot Tasks (coming soon)
+
+### Example Usage
+
+<Tabs>
+  <TabItem label="Python">
+    <Code code={email_python_configure_email_notifications} lang="python" title="Configure Email Notifications" />
+  </TabItem>
+  <TabItem label="C#">
+    <Code code={email_csharp_configure_email_notifications} lang="csharp" title="Configure Email Notifications" />
+  </TabItem>
+  <TabItem label="Java">
+    <Code code={email_java_configure_email_notifications} lang="java" title="Configure Email Notifications" />
+  </TabItem>
+</Tabs>
+
+## Email Processing
+
+We support processing over email. You can send a PDF to our designated email address via attachments and we will process it as if you uploaded it via the API.
+
+:::note[Your users email must match the sender]
+For us to securely process your documents, we need to verify that the email is sent from your users. So please make sure that your Areal user's email matches the sender of the email.
+:::
+
+![Email Processing](../assets/email-processing.png)
+
+:::caution[Attachments is all you need]
+We only care about the attachments in the email. Body will be ignored.
+Your email body will be ignored.
+:::
+
+### Example Usage
+
+<Tabs>
+  <TabItem label="Python">
+    <Code code={email_python_processing_over_email} lang="python" title="Processing over email" />
+  </TabItem>
+  <TabItem label="C#">
+    <Code code={email_csharp_processing_over_email} lang="csharp" title="Processing over email" />
+  </TabItem>
+  <TabItem label="Java">
+    <Code code={email_java_processing_over_email} lang="java" title="Processing over email" />
+  </TabItem>
+</Tabs>

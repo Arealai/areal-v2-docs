@@ -1,0 +1,121 @@
+---
+title: Status Tracking
+description: Track asynchronous processing with WebSockets or polling.
+---
+
+import { Code, TabItem, Tabs } from '@astrojs/starlight/components';
+import status_python_websocket_status_tracking from '../../../code_samples/status/python/websocket_status_tracking.py?raw';
+import status_csharp_websocket_status_tracking from '../../../code_samples/status/csharp/websocket_status_tracking.cs?raw';
+import status_java_websocket_status_tracking from '../../../code_samples/status/java/websocket_status_tracking.java?raw';
+import status_python_polling_status_tracking from '../../../code_samples/status/python/polling_status_tracking.py?raw';
+import status_csharp_polling_status_tracking from '../../../code_samples/status/csharp/polling_status_tracking.cs?raw';
+import status_java_polling_status_tracking from '../../../code_samples/status/java/polling_status_tracking.java?raw';
+import status_python_document_status_models from '../../../code_samples/status/python/document_status_models.py?raw';
+import status_csharp_document_status_models from '../../../code_samples/status/csharp/document_status_models.cs?raw';
+import status_java_document_status_models from '../../../code_samples/status/java/document_status_models.java?raw';
+import status_python_cdbalancer_status_models from '../../../code_samples/status/python/cdbalancer_status_models.py?raw';
+import status_csharp_cdbalancer_status_models from '../../../code_samples/status/csharp/cdbalancer_status_models.cs?raw';
+import status_java_cdbalancer_status_models from '../../../code_samples/status/java/cdbalancer_status_models.java?raw';
+import status_python_copilot_task_models from '../../../code_samples/status/python/copilot_task_models.py?raw';
+import status_csharp_copilot_task_models from '../../../code_samples/status/csharp/copilot_task_models.cs?raw';
+import status_java_copilot_task_models from '../../../code_samples/status/java/copilot_task_models.java?raw';
+
+**Document processing** is an asynchronous process. Therefore, we need a way to track the status of the processing.
+There are 2 ways to track the status of the processing:
+
+- **WebSockets** (recommended)
+- **Polling** (alternative)
+
+## WebSockets
+
+WebSockets are a more efficient way to track the status of the processing.
+It is a long-lived connection that allows you to receive updates as they happen.
+
+<Tabs>
+  <TabItem label="Python">
+    <Code code={status_python_websocket_status_tracking} lang="python" title="WebSockets Example" />
+  </TabItem>
+  <TabItem label="C#">
+    <Code code={status_csharp_websocket_status_tracking} lang="csharp" title="WebSockets Example" />
+  </TabItem>
+  <TabItem label="Java">
+    <Code code={status_java_websocket_status_tracking} lang="java" title="WebSockets Example" />
+  </TabItem>
+</Tabs>
+
+For other WebSocket notification types see [WebSocket API](#websocket-api)
+
+
+## Polling
+
+Continuously poll the status of the processing until it is completed or failed.
+You can also implement a custom timeout to avoid waiting forever.
+
+<Tabs>
+  <TabItem label="Python">
+    <Code code={status_python_polling_status_tracking} lang="python" title="Long Polling Example" />
+  </TabItem>
+  <TabItem label="C#">
+    <Code code={status_csharp_polling_status_tracking} lang="csharp" title="Long Polling Example" />
+  </TabItem>
+  <TabItem label="Java">
+    <Code code={status_java_polling_status_tracking} lang="java" title="Long Polling Example" />
+  </TabItem>
+</Tabs>
+
+## Meaning of the status
+
+- **pending**: We received your request, but processing has not started yet.
+- **preparing**: The document is being classified.
+- **processing**: Data extraction is in progress.
+- **completed**: Processing is complete and successful.
+- **failed**: Processing failed. Please check the error details or try again.
+
+
+## WebSocket API
+
+### Document Processing & DocPush
+
+<Tabs>
+  <TabItem label="Python">
+    <Code code={status_python_document_status_models} lang="python" title="Document Status Tracking" />
+  </TabItem>
+  <TabItem label="C#">
+    <Code code={status_csharp_document_status_models} lang="csharp" title="Document Status Tracking" />
+  </TabItem>
+  <TabItem label="Java">
+    <Code code={status_java_document_status_models} lang="java" title="Document Status Tracking" />
+  </TabItem>
+</Tabs>
+
+---
+
+### CDBalancer & CDPush/Pull
+
+<Tabs>
+  <TabItem label="Python">
+    <Code code={status_python_cdbalancer_status_models} lang="python" title="CDBalancer Status Tracking" />
+  </TabItem>
+  <TabItem label="C#">
+    <Code code={status_csharp_cdbalancer_status_models} lang="csharp" title="CDBalancer Status Tracking" />
+  </TabItem>
+  <TabItem label="Java">
+    <Code code={status_java_cdbalancer_status_models} lang="java" title="CDBalancer Status Tracking" />
+  </TabItem>
+</Tabs>
+
+---
+
+### Copilot Tasks
+
+<Tabs>
+  <TabItem label="Python">
+    <Code code={status_python_copilot_task_models} lang="python" title="Copilot Tasks Status Tracking" />
+  </TabItem>
+  <TabItem label="C#">
+    <Code code={status_csharp_copilot_task_models} lang="csharp" title="Copilot Tasks Status Tracking" />
+  </TabItem>
+  <TabItem label="Java">
+    <Code code={status_java_copilot_task_models} lang="java" title="Copilot Tasks Status Tracking" />
+  </TabItem>
+</Tabs>

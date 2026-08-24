@@ -1,0 +1,35 @@
+---
+title: Closing Disclosure Balancing
+description: Balance two processed Closing Disclosure documents.
+---
+
+import { Code, TabItem, Tabs } from '@astrojs/starlight/components';
+import cdbalancer_python_cdbalancer_example from '../../code_samples/cdbalancer/python/cdbalancer_example.py?raw';
+import cdbalancer_csharp_cdbalancer_example from '../../code_samples/cdbalancer/csharp/cdbalancer_example.cs?raw';
+import cdbalancer_java_cdbalancer_example from '../../code_samples/cdbalancer/java/cdbalancer_example.java?raw';
+
+CDBalancer takes 2 processed Closing Disclosure documents and *balances* them.
+
+:::caution[Asynchronous CDBalancer]
+The entire flow is asynchronous, meaning that when you start the cdbalancer we will respond with a __request_id__ which you can use to track of the status of the cdbalancer request. 
+
+While users of Areal Dashboard can easily see the live status of their cdbalancer requests.
+
+So if you are planning to integrate our API, you can use our WebSocket API or manually poll the status of the cdbalancer request.
+
+See [Status Tracking](processing/status.md) for more details.
+:::
+
+## Example Usage
+
+<Tabs>
+  <TabItem label="Python">
+    <Code code={cdbalancer_python_cdbalancer_example} lang="python" title="CDBalancer Example Usage" />
+  </TabItem>
+  <TabItem label="C#">
+    <Code code={cdbalancer_csharp_cdbalancer_example} lang="csharp" title="CDBalancer Example Usage" />
+  </TabItem>
+  <TabItem label="Java">
+    <Code code={cdbalancer_java_cdbalancer_example} lang="java" title="CDBalancer Example Usage" />
+  </TabItem>
+</Tabs>

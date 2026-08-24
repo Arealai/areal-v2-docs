@@ -1,15 +1,13 @@
 # Areal V2 Documentation
 
-Areal V2 Documentation is a documentation for the Areal project.
+Documentation for the Areal V2 platform, built with [Astro](https://astro.build/) and [Starlight](https://starlight.astro.build/).
 
 ## Setup & Contribute
 
 ```bash
-uv sync -U
-mkdocs serve
-# open http://127.0.0.1:8000/
+npm install
+npm run dev
+# open http://localhost:4321/
 ```
 
-Change `docs/` files, see your changes live at http://127.0.0.1:8000/
-Then open a PR.
-
+Change files under `src/content/docs/`, then open a PR. The site deploys from the `development` branch.
