@@ -51,13 +51,7 @@ export default defineConfig({
           ],
         },
         { label: 'CDBalancer', slug: 'cdbalancer' },
-        {
-          label: 'Migration Guide',
-          items: [
-            { label: 'Overview', slug: 'migration' },
-            { label: 'Code Examples', slug: 'migration/examples' },
-          ],
-        },
+        { label: 'Copilot', slug: 'copilot' },
         { label: 'Changelog', slug: 'changelog' },
       ],
     }),
