@@ -9,8 +9,8 @@ Notable changes to the Areal V2 platform and this documentation.
 
 ### Added
 
-- **Tickets.** Open and track support tickets from the dashboard. Link a ticket to a session, document, CD balance, or Copilot task. Set status, priority, assignee, and tags; add comments and file attachments. Filter the list, reopen a closed ticket, or delete one.
-- **Second-lien loans.** Bond closings keep a paired primary and second-lien [session](sessions.md). The dashboard shows the linked loan. Closing packages that mix both liens — including files dropped in OneDrive — land on the primary session, with second-lien documents classified as such. Documents already processed on the second-lien session can be copied to the primary so they file with the first-lien loan. Second-lien sessions do not push on their own.
+- **Tickets.** Open and track support tickets from the dashboard. Link a ticket to a loan, document, CD balance, or Copilot task. Set status, priority, assignee, and tags; add comments and file attachments. Filter the list, reopen a closed ticket, or delete one.
+- **Second-lien loans.** Bond closings keep a paired primary and second-lien [loan](sessions.md). The dashboard shows the linked loan. Closing packages that mix both liens — including files dropped in OneDrive — land on the primary loan, with second-lien documents classified as such. Documents already processed on the second-lien loan can be copied to the primary so they file with the first-lien loan. Second-lien loans do not push on their own.
 - **2nd-lien document types.** New 2nd Mortgage Loan Estimate and 2nd Mortgage Initial Closing Disclosure, alongside 2nd Closing Disclosure, 2nd 1003, 2nd Security Instrument, Endorsement Allonge, and First Payment Letter.
 - **Byte.** Connect Byte as a loan origination system: look up loans, pull and push documents, and ingest OneDrive files onto the matching Byte loan. [CD balancer](cdbalancer.md) now pulls and pushes Closing Disclosures to Byte, including fees.
 

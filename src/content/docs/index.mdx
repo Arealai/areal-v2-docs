@@ -3,7 +3,8 @@ title: Areal API Documentation
 description: High-level documentation for the Areal V2 platform and API.
 ---
 
-import { Card, CardGrid, LinkButton } from '@astrojs/starlight/components';
+import { CardGrid, LinkButton } from '@astrojs/starlight/components';
+import FeatureCard from '../../components/FeatureCard.astro';
 
 This documentation gives you a high-level understanding of Areal. Each section explains a specific component or product.
 
@@ -14,22 +15,18 @@ This documentation gives you a high-level understanding of Areal. Each section e
 ## Suggested reading order
 
 <CardGrid stagger>
-  <Card title="Authentication" icon="approve-check">
+  <FeatureCard title="Authentication" href="/auth/" icon="key-round">
     How to authenticate and authorize users to access the API.
-    [Read more →](/auth/)
-  </Card>
-  <Card title="Processing" icon="document">
+  </FeatureCard>
+  <FeatureCard title="Processing" href="/processing/processing/" icon="files">
     How to process documents and extract structured data.
-    [Read more →](/processing/processing/)
-  </Card>
-  <Card title="Upload Sessions" icon="open-book">
-    How to manage upload sessions and documents.
-    [Read more →](/sessions/)
-  </Card>
-  <Card title="CDBalancer" icon="puzzle">
+  </FeatureCard>
+  <FeatureCard title="Loans" href="/sessions/" icon="folder-open">
+    How to manage loans and their documents.
+  </FeatureCard>
+  <FeatureCard title="CDBalancer" href="/cdbalancer/" icon="git-compare">
     How to balance Closing Disclosure documents.
-    [Read more →](/cdbalancer/)
-  </Card>
+  </FeatureCard>
 </CardGrid>
 
 See the [Changelog](/changelog/) for notable platform and documentation updates.

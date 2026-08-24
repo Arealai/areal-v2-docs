@@ -1,6 +1,6 @@
 ---
-title: Upload Sessions
-description: Group documents into an upload session for each loan.
+title: Loans
+description: Group documents into a loan for processing.
 ---
 
 import { Code, TabItem, Tabs } from '@astrojs/starlight/components';
@@ -8,11 +8,10 @@ import sessions_python_get_upload_session_details from '../../code_samples/sessi
 import sessions_csharp_get_upload_session_details from '../../code_samples/sessions/csharp/get_upload_session_details.cs?raw';
 import sessions_java_get_upload_session_details from '../../code_samples/sessions/java/get_upload_session_details.java?raw';
 
-When you upload a document to ArealAI for processing, we create an upload session, a grouping of documents related to your loan.
+When you upload a document to Areal for processing, we create a loan — a grouping of documents for that mortgage. The API calls this an `UploadSession`.
 
-:::caution[UploadSession one-to-one with Loan]
-We designed the UploadSession to be one-to-one with a Loan.
-So to get the most accurate results, you should create a new UploadSession for each loan.
+:::caution[One loan per mortgage]
+Create a new loan for each mortgage. In the API that is one `UploadSession` per loan.
 See [Processing](processing/processing.md) for more details.
 :::
 
@@ -28,14 +27,14 @@ See [Processing](processing/processing.md) for more details.
 
 <Tabs>
   <TabItem label="Python">
-    <Code code={sessions_python_get_upload_session_details} lang="python" title="Get UploadSession details" />
+    <Code code={sessions_python_get_upload_session_details} lang="python" title="Get loan details" />
   </TabItem>
   <TabItem label="C#">
-    <Code code={sessions_csharp_get_upload_session_details} lang="csharp" title="Get UploadSession details" />
+    <Code code={sessions_csharp_get_upload_session_details} lang="csharp" title="Get loan details" />
   </TabItem>
   <TabItem label="Java">
-    <Code code={sessions_java_get_upload_session_details} lang="java" title="Get UploadSession details" />
+    <Code code={sessions_java_get_upload_session_details} lang="java" title="Get loan details" />
   </TabItem>
 </Tabs>
 
-For technical details see [UploadSession API](https://dev-api.v2.areal.ai/api/v2/docs#/sessions)
+For technical details see the [UploadSession API](https://dev-api.v2.areal.ai/api/v2/docs#/sessions).

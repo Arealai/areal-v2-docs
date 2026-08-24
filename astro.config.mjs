@@ -44,9 +44,9 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Session',
+          label: 'Loans',
           items: [
-            { label: 'Upload Sessions', slug: 'sessions' },
+            { label: 'Overview', slug: 'sessions' },
             { label: 'LoanInfo', slug: 'loan_info' },
           ],
         },
