@@ -5,6 +5,23 @@ description: Notable changes to the Areal V2 platform and this documentation.
 
 Notable changes to the Areal V2 platform and this documentation.
 
+## September 10, 2026
+
+### Added
+
+- When a [CD balancer](cdbalancer.md) run fails, the dashboard now shows a short explanation of why.
+- Fee rename recommendations note how often that rename has been approved.
+
+### Changed
+
+- After-balancing summaries are easier to read.
+- Locked fees import more reliably when amounts change.
+- Fee mapping is smarter when names overlap or use common abbreviations.
+
+### Fixed
+
+- A few dashboard annoyances are gone: comparisons keep your edits when document links refresh, and leaving a page mid-load or after an app update no longer flashes an error.
+
 ## August 24, 2026
 
 ### Added
