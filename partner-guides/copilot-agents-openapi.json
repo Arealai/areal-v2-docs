@@ -2064,8 +2064,6 @@
               "template",
               "component",
               "loan_info",
-              "encompass",
-              "meridianlink",
               "byte",
               "selector",
               "email",
@@ -2481,14 +2479,6 @@
             "title": "Updated At",
             "type": "string"
           },
-          "is_encompass_update_task": {
-            "title": "Is Encompass Update Task",
-            "type": "boolean"
-          },
-          "is_encompass_update_accepted": {
-            "title": "Is Encompass Update Accepted",
-            "type": "boolean"
-          },
           "related_documents": {
             "description": "list of related documents with step number",
             "items": {
@@ -2530,9 +2520,7 @@
           "execution_results",
           "plan",
           "status",
-          "updated_at",
-          "is_encompass_update_task",
-          "is_encompass_update_accepted"
+          "updated_at"
         ],
         "title": "ExecutePlanResponseSchema",
         "type": "object"

@@ -243,15 +243,15 @@ key: &lt;api_key&gt;</code></pre>
   <tr><td><code>401</code></td><td>No valid credentials were sent.</td></tr>
   <tr><td><code>403</code></td><td>The agent, task or loan belongs to another organization.</td></tr>
   <tr><td><code>404</code></td><td>The id doesn't exist or isn't a valid UUID.</td></tr>
-  <tr><td><code>409</code></td><td>The task can't run yet. Usually an Encompass loan-lock retry is already scheduled for it (see <code>results.next_retry_at</code>).</td></tr>
+  <tr><td><code>409</code></td><td>The task can't run yet. Usually Areal has already scheduled an automatic retry because the loan couldn't be read from Byte, for example while it was locked (see <code>results.next_retry_at</code>).</td></tr>
   <tr><td><code>422</code></td><td>The request body or query parameters don't match the schema. The response lists the invalid fields.</td></tr>
   <tr><td><code>5xx</code></td><td>Unexpected server error. Safe to retry with backoff for <code>GET</code> requests and run requests.</td></tr>
 </table>
 
 <h3 id="loan-id">Finding the loan's <code>session_id</code></h3>
-<p>Every call below needs the Areal <code>session_id</code> of the loan. If you only have your LOS loan number or GUID, search for it:</p>
+<p>Every call below needs the Areal <code>session_id</code> of the loan. If you only have the Byte loan number or file data id, search for it:</p>
 <div class="endpoint"><span class="m get">GET</span>/sessions/?search={loan_number_or_name}</div>
-<p><code>search</code> matches the loan's name and its external references, such as the LOS loan number and GUID. Use <code>objects[].id</code> from the response as <code>session_id</code>.</p>
+<p><code>search</code> matches the loan's name and its external references, such as the Byte file data id. Use <code>objects[].id</code> from the response as <code>session_id</code>.</p>
 <pre><code>curl -s "https://uat-api.v2.areal.ai/api/v2/sessions/?search=1000123456" \
   -H "Authorization: Bearer $AREAL_API_KEY"</code></pre>
 <pre><code>{
@@ -441,8 +441,6 @@ key: &lt;api_key&gt;</code></pre>
             <span class="k">"template"</span>: { <span class="k">"id"</span>: <span class="s">"3f2e1d0c-..."</span>, <span class="k">"name"</span>: <span class="s">"Note"</span> }, <span class="k">"confidence"</span>: <span class="s">"confident"</span> }
         ],
         <span class="k">"assigned_user"</span>: null,
-        <span class="k">"is_encompass_update_task"</span>: false,
-        <span class="k">"is_encompass_update_accepted"</span>: false,
         <span class="k">"next_retry_at"</span>: null,
         <span class="k">"email_results"</span>: []
       },
@@ -481,9 +479,7 @@ key: &lt;api_key&gt;</code></pre>
   <tr><td><code>execution_results</code></td><td>One entry per executed step: <code>step_number</code>, <code>tool</code>, <code>status</code> (<code>EXECUTED</code>, <code>SKIPPED</code> or <code>FAILED</code>), <code>result</code>, <code>reason</code> and <code>human_readable_description</code>.</td></tr>
   <tr><td><code>related_documents</code></td><td>The loan documents the run used, with each document's processing status and type.</td></tr>
   <tr><td><code>assigned_user</code></td><td>The user responsible for resolving this result, or <code>null</code>.</td></tr>
-  <tr><td><code>is_encompass_update_task</code></td><td><code>true</code> if the plan writes fields to Encompass.</td></tr>
-  <tr><td><code>is_encompass_update_accepted</code></td><td>Whether a user has accepted the Encompass update.</td></tr>
-  <tr><td><code>next_retry_at</code></td><td>If the Encompass loan was locked, the time Areal will retry automatically. While this is set, running the task again returns <code>409</code>.</td></tr>
+  <tr><td><code>next_retry_at</code></td><td>If the loan couldn't be read from Byte, for example while it was locked, the time Areal will retry automatically. While this is set, running the task again returns <code>409</code>.</td></tr>
   <tr><td><code>email_results</code></td><td>Emails the run sent: template, recipients, and <code>sent</code> or <code>failed</code>.</td></tr>
 </table>
 
@@ -610,10 +606,10 @@ key: &lt;api_key&gt;</code></pre>
 </div>
 <pre><code>{ <span class="k">"session_id"</span>: <span class="s">"6f1c2b0e-3a7d-4c55-9a1e-2b8f0d4e9c11"</span> }</code></pre>
 <p>Both return <code>{"message": "ok"}</code> right away, and the run continues in the background. When you run a single task, its <code>results.status</code> changes to <code>pending</code> before the response is sent. Follow the run as described in <a href="#polling">Tracking a run</a>.</p>
-<p>A single-task run returns <code>409</code> while an Encompass lock retry is scheduled for that task (<code>results.next_retry_at</code> is set). Wait until that time, or until the retry finishes, then try again.</p>
+<p>A single-task run returns <code>409</code> while an automatic retry is scheduled for that task (<code>results.next_retry_at</code> is set). Wait until that time, or until the retry finishes, then try again.</p>
 <div class="callout">
-  <strong>Tasks that write to Encompass</strong>
-  If <code>results.is_encompass_update_task</code> is <code>true</code> and <code>results.is_encompass_update_accepted</code> is <code>false</code>, the dashboard asks the user to confirm before running the task, because the run will write fields to the Encompass loan. Your integration should get the same confirmation from a person before it runs such a task.
+  <strong>Tasks that write to Byte</strong>
+  If a step in <code>results.plan</code> uses the tool <code>update_byte_fields</code>, running the task writes those fields to the Byte loan. There is no confirmation step, so check the plan before you run a task like this.
 </div>
 
 <!-- ---------------- override -->
@@ -678,9 +674,7 @@ key: &lt;api_key&gt;</code></pre>
   <tr><td><code>template</code></td><td>A document type (for example Note, Closing Disclosure)</td><td><code>GET /resources/templates/?search=…</code> → <code>objects[].id</code></td></tr>
   <tr><td><code>component</code></td><td>A field extracted from a document type</td><td><code>GET /resources/templates/{template_id}/components/</code> → <code>objects[].id</code></td></tr>
   <tr><td><code>loan_info</code></td><td>A loan-level attribute</td><td><code>GET /resources/loan_infos/?search=…</code> → <code>objects[].id</code></td></tr>
-  <tr><td><code>encompass</code></td><td>An Encompass field</td><td>The Encompass field id, for example <code>4000</code> or <code>CX.ISECLOSING</code></td></tr>
   <tr><td><code>byte</code></td><td>A Byte field</td><td><code>GET /resources/byte_fields/</code></td></tr>
-  <tr><td><code>meridianlink</code></td><td>A MeridianLink field</td><td>The MeridianLink field id</td></tr>
   <tr><td><code>selector</code></td><td>A document selector, such as which version of a document to use</td><td><code>GET /resources/selectors/</code></td></tr>
   <tr><td><code>email</code></td><td>An email template to send</td><td><code>GET /profiles/admin/organization/email_templates/</code></td></tr>
   <tr><td><code>loan_contacts</code></td><td>A loan contact by role. The email address is looked up on the loan at run time.</td><td><code>GET /copilot/loan-contact-roles/</code> → <code>roles[].key</code> (for example <code>closer</code>)</td></tr>
