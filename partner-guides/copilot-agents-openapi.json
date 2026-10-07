@@ -1706,63 +1706,6 @@
         ]
       }
     },
-    "/api/v2/resources/encompass_fields/": {
-      "get": {
-        "operationId": "api_views_resources_get_encompass_fields",
-        "summary": "Get Encompass Fields",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "session_id",
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Session Id"
-            },
-            "required": false
-          },
-          {
-            "in": "query",
-            "name": "search_query",
-            "schema": {
-              "default": "borrower",
-              "title": "Search Query",
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EncompassFieldsResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "resources"
-        ],
-        "security": [
-          {
-            "ArealAPIKeyBearer": []
-          },
-          {
-            "ArealAPIKeyHeader": []
-          }
-        ]
-      }
-    },
     "/api/v2/resources/byte_fields/": {
       "get": {
         "operationId": "api_views_resources_get_byte_fields",
@@ -1802,63 +1745,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ByteFieldsResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "resources"
-        ],
-        "security": [
-          {
-            "ArealAPIKeyBearer": []
-          },
-          {
-            "ArealAPIKeyHeader": []
-          }
-        ]
-      }
-    },
-    "/api/v2/resources/meridianlink_fields/": {
-      "get": {
-        "operationId": "api_views_resources_get_meridianlink_fields",
-        "summary": "Get Meridianlink Fields",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "session_id",
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Session Id"
-            },
-            "required": false
-          },
-          {
-            "in": "query",
-            "name": "search_query",
-            "schema": {
-              "default": "borrower",
-              "title": "Search Query",
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MeridianLinkFieldsResponse"
                 }
               }
             }
@@ -2547,55 +2433,6 @@
         "title": "EmailTemplatesConfigSchema",
         "type": "object"
       },
-      "EncompassFieldListItem": {
-        "properties": {
-          "id": {
-            "title": "Id",
-            "type": "string"
-          },
-          "description": {
-            "title": "Description",
-            "type": "string"
-          },
-          "value": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Value"
-          }
-        },
-        "required": [
-          "id",
-          "description"
-        ],
-        "title": "EncompassFieldListItem",
-        "type": "object"
-      },
-      "EncompassFieldsResponse": {
-        "properties": {
-          "meta": {
-            "$ref": "#/components/schemas/MetaSchema"
-          },
-          "objects": {
-            "items": {
-              "$ref": "#/components/schemas/EncompassFieldListItem"
-            },
-            "title": "Objects",
-            "type": "array"
-          }
-        },
-        "required": [
-          "meta",
-          "objects"
-        ],
-        "title": "EncompassFieldsResponse",
-        "type": "object"
-      },
       "ExecutePlanResponseSchema": {
         "properties": {
           "execution_results": {
@@ -2975,55 +2812,6 @@
           "attrs"
         ],
         "title": "MentionSchema",
-        "type": "object"
-      },
-      "MeridianLinkFieldListItem": {
-        "properties": {
-          "id": {
-            "title": "Id",
-            "type": "string"
-          },
-          "description": {
-            "title": "Description",
-            "type": "string"
-          },
-          "value": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Value"
-          }
-        },
-        "required": [
-          "id",
-          "description"
-        ],
-        "title": "MeridianLinkFieldListItem",
-        "type": "object"
-      },
-      "MeridianLinkFieldsResponse": {
-        "properties": {
-          "meta": {
-            "$ref": "#/components/schemas/MetaSchema"
-          },
-          "objects": {
-            "items": {
-              "$ref": "#/components/schemas/MeridianLinkFieldListItem"
-            },
-            "title": "Objects",
-            "type": "array"
-          }
-        },
-        "required": [
-          "meta",
-          "objects"
-        ],
-        "title": "MeridianLinkFieldsResponse",
         "type": "object"
       },
       "MetaSchema": {

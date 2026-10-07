@@ -678,9 +678,9 @@ key: &lt;api_key&gt;</code></pre>
   <tr><td><code>template</code></td><td>A document type (for example Note, Closing Disclosure)</td><td><code>GET /resources/templates/?search=…</code> → <code>objects[].id</code></td></tr>
   <tr><td><code>component</code></td><td>A field extracted from a document type</td><td><code>GET /resources/templates/{template_id}/components/</code> → <code>objects[].id</code></td></tr>
   <tr><td><code>loan_info</code></td><td>A loan-level attribute</td><td><code>GET /resources/loan_infos/?search=…</code> → <code>objects[].id</code></td></tr>
-  <tr><td><code>encompass</code></td><td>An Encompass field</td><td><code>GET /resources/encompass_fields/</code>. The id is the Encompass field id.</td></tr>
+  <tr><td><code>encompass</code></td><td>An Encompass field</td><td>The Encompass field id, for example <code>4000</code> or <code>CX.ISECLOSING</code></td></tr>
   <tr><td><code>byte</code></td><td>A Byte field</td><td><code>GET /resources/byte_fields/</code></td></tr>
-  <tr><td><code>meridianlink</code></td><td>A MeridianLink field</td><td><code>GET /resources/meridianlink_fields/</code></td></tr>
+  <tr><td><code>meridianlink</code></td><td>A MeridianLink field</td><td>The MeridianLink field id</td></tr>
   <tr><td><code>selector</code></td><td>A document selector, such as which version of a document to use</td><td><code>GET /resources/selectors/</code></td></tr>
   <tr><td><code>email</code></td><td>An email template to send</td><td><code>GET /profiles/admin/organization/email_templates/</code></td></tr>
   <tr><td><code>loan_contacts</code></td><td>A loan contact by role. The email address is looked up on the loan at run time.</td><td><code>GET /copilot/loan-contact-roles/</code> → <code>roles[].key</code> (for example <code>closer</code>)</td></tr>
