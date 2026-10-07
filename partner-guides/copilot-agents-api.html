@@ -224,11 +224,10 @@
 <h3 id="base-url">Base URL</h3>
 <table>
   <tr><th>Environment</th><th>Base URL</th></tr>
-  <tr><td>Production</td><td><code>https://prod-api.v2.areal.ai/api/v2</code></td></tr>
-  <tr><td>Test</td><td>Provided by Areal together with your test credentials</td></tr>
+  <tr><td>UAT</td><td><code>https://uat-api.v2.areal.ai/api/v2</code></td></tr>
 </table>
 <p>All paths in this guide are relative to the base URL. Requests and responses are JSON. Send <code>Content-Type: application/json</code> on requests that have a body. Paths end with a trailing slash; keep it.</p>
-<p>The machine-readable spec is at <a href="https://prod-api.v2.areal.ai/api/v2/openapi.json"><code>/openapi.json</code></a>, and the interactive reference is at <a href="https://prod-api.v2.areal.ai/api/v2/docs#tag/copilot"><code>/docs</code></a> under the <em>copilot</em> tag.</p>
+<p>Full request and response schemas for every endpoint in this guide are in the OpenAPI file that comes with it, <code>copilot-agents-openapi.json</code>.</p>
 
 <h3 id="auth">Authentication</h3>
 <p>For server-to-server integrations, use an <strong>API key</strong>. Areal issues one per integration user. Send it on every request in either of these headers:</p>
@@ -255,7 +254,7 @@ key: &lt;api_key&gt;</code></pre>
 <p>Every call below needs the Areal <code>session_id</code> of the loan. If you only have your LOS loan number or GUID, search for it:</p>
 <div class="endpoint"><span class="m get">GET</span>/sessions/?search={loan_number_or_name}</div>
 <p><code>search</code> matches the loan's name and its external references, such as the LOS loan number and GUID. Use <code>objects[].id</code> from the response as <code>session_id</code>.</p>
-<pre><code>curl -s "https://prod-api.v2.areal.ai/api/v2/sessions/?search=1000123456" \
+<pre><code>curl -s "https://uat-api.v2.areal.ai/api/v2/sessions/?search=1000123456" \
   -H "Authorization: Bearer $AREAL_API_KEY"</code></pre>
 <pre><code>{
   <span class="k">"meta"</span>: { <span class="k">"totalCount"</span>: 1, <span class="k">"pageIndex"</span>: 0, <span class="k">"pageSize"</span>: 10 },
@@ -283,7 +282,7 @@ key: &lt;api_key&gt;</code></pre>
 
 <p>The response isn't paginated, and filtering and sorting are done by the client. In the list response, <code>tasks</code> is always an empty array, and <code>starting_condition</code> and <code>post_run_action</code> are always <code>null</code>. To get them, use <a href="#agent-detail">agent detail</a> and <a href="#pull-tasks">tasks</a>.</p>
 
-<pre><code>curl -s "https://prod-api.v2.areal.ai/api/v2/copilot/task-group/?session_id=$SESSION_ID" \
+<pre><code>curl -s "https://uat-api.v2.areal.ai/api/v2/copilot/task-group/?session_id=$SESSION_ID" \
   -H "Authorization: Bearer $AREAL_API_KEY"</code></pre>
 
 <pre><code>{
@@ -353,7 +352,7 @@ key: &lt;api_key&gt;</code></pre>
 <h3 id="agent-detail">Agent detail</h3>
 <div class="endpoint"><span class="m get">GET</span>/copilot/task-group/{task_group_id}/?session_id={session_id}</div>
 <p>Returns the same summary fields as the list, plus the full <code>starting_condition</code> and <code>post_run_action</code> task objects (or <code>null</code> if the agent doesn't have them). <code>tasks</code> is <code>null</code> here; get regular tasks from the <a href="#pull-tasks">tasks endpoint</a>. <code>session_id</code> is required.</p>
-<pre><code>curl -s "https://prod-api.v2.areal.ai/api/v2/copilot/task-group/$AGENT_ID/?session_id=$SESSION_ID" \
+<pre><code>curl -s "https://uat-api.v2.areal.ai/api/v2/copilot/task-group/$AGENT_ID/?session_id=$SESSION_ID" \
   -H "Authorization: Bearer $AREAL_API_KEY"</code></pre>
 <pre><code>{
   <span class="k">"id"</span>: <span class="s">"0b9e8f5c-1d2a-4e3b-8c7d-6a5f4e3d2c1b"</span>,
@@ -403,7 +402,7 @@ key: &lt;api_key&gt;</code></pre>
   <tr><td><code>search</code></td><td>none</td><td>Case-insensitive match on task name or prompt.</td></tr>
 </table>
 
-<pre><code>curl -s "https://prod-api.v2.areal.ai/api/v2/copilot/task-group/$AGENT_ID/tasks/?session_id=$SESSION_ID&amp;pageSize=100&amp;sort=name.asc" \
+<pre><code>curl -s "https://uat-api.v2.areal.ai/api/v2/copilot/task-group/$AGENT_ID/tasks/?session_id=$SESSION_ID&amp;pageSize=100&amp;sort=name.asc" \
   -H "Authorization: Bearer $AREAL_API_KEY"</code></pre>
 
 <pre><code>{
@@ -530,7 +529,7 @@ key: &lt;api_key&gt;</code></pre>
   <tr><td><code>prompt</code></td><td>object, optional</td><td>New prompt in <a href="#prompt-format">formatted prompt</a> format. Areal generates a new plan from it.</td></tr>
 </table>
 <p>Leave out any field you don't want to change. <code>session_id</code> is required: Areal uses that loan as context when it generates the plan, and the response contains the task's result on that loan.</p>
-<pre><code>curl -s -X PATCH "https://prod-api.v2.areal.ai/api/v2/copilot/task/$TASK_ID/?session_id=$SESSION_ID" \
+<pre><code>curl -s -X PATCH "https://uat-api.v2.areal.ai/api/v2/copilot/task/$TASK_ID/?session_id=$SESSION_ID" \
   -H "Authorization: Bearer $AREAL_API_KEY" \
   -H "Content-Type: application/json" \
   --max-time 120 \
@@ -570,7 +569,7 @@ key: &lt;api_key&gt;</code></pre>
   <tr><td><code>is_task_group_condition</code></td><td>bool, default <code>false</code></td><td>Make this the agent's starting condition. An agent can have only one.</td></tr>
   <tr><td><code>is_post_run_action</code></td><td>bool, default <code>false</code></td><td>Make this the agent's post-run action. An agent can have only one. A task can't be both a starting condition and a post-run action.</td></tr>
 </table>
-<pre><code>curl -s -X POST "https://prod-api.v2.areal.ai/api/v2/copilot/task/?session_id=$SESSION_ID" \
+<pre><code>curl -s -X POST "https://uat-api.v2.areal.ai/api/v2/copilot/task/?session_id=$SESSION_ID" \
   -H "Authorization: Bearer $AREAL_API_KEY" \
   -H "Content-Type: application/json" \
   --max-time 120 \
@@ -642,7 +641,7 @@ key: &lt;api_key&gt;</code></pre>
 <h3 id="assign-task">Assign a user to a task result</h3>
 <div class="endpoint"><span class="m post">POST</span>/copilot/task/{task_id}/assign_user/</div>
 <pre><code>{ <span class="k">"session_id"</span>: <span class="s">"6f1c…"</span>, <span class="k">"user_id"</span>: <span class="s">"c0ffee00-…"</span> }   <span class="c">// user_id: null to unassign</span></code></pre>
-<p>Sets who is responsible for the task's result on this loan. The assigned user gets an email notification. <code>user_id</code> must be a user in your organization. The task needs a result on this loan first, so run it at least once; otherwise the call returns <code>400</code>.</p>
+<p>Sets who is responsible for the task's result on this loan. The assigned user gets an email notification. <code>user_id</code> must be a user in your organization; list them with <code>GET /profiles/users/</code> and use <code>users[].id</code>. The task needs a result on this loan first, so run it at least once; otherwise the call returns <code>400</code>.</p>
 
 <!-- ---------------- agent settings -->
 <h3 id="edit-agent">Edit agent settings</h3>
@@ -697,7 +696,7 @@ key: &lt;api_key&gt;</code></pre>
 <p>This script finds a loan, lists its agents and their statuses, lists each agent's tasks, changes one task, runs the agent and waits for the run to finish.</p>
 <pre><code><span class="k">import</span> os, time, requests
 
-BASE = <span class="s">"https://prod-api.v2.areal.ai/api/v2"</span>
+BASE = <span class="s">"https://uat-api.v2.areal.ai/api/v2"</span>
 api = requests.Session()
 api.headers[<span class="s">"Authorization"</span>] = <span class="s">f"Bearer {os.environ['AREAL_API_KEY']}"</span>
 
@@ -793,9 +792,11 @@ print(<span class="s">"Agent status:"</span>, detail[<span class="s">"status"</s
   <tr><td><span class="m post">POST</span></td><td><code>/copilot/task/{task_id}/assign_user/</code></td><td>Assign or unassign a user on a result</td></tr>
   <tr><td><span class="m get">GET</span></td><td><code>/copilot/loan-contact-roles/</code></td><td>Loan contact roles for <code>loan_contacts</code> mentions</td></tr>
   <tr><td><span class="m get">GET</span></td><td><code>/sessions/?search=</code></td><td>Find a loan's <code>session_id</code></td></tr>
+  <tr><td><span class="m get">GET</span></td><td><code>/profiles/users/</code></td><td>List your organization's users, for <code>assign_user</code></td></tr>
+  <tr><td><span class="m post">POST</span></td><td><code>/accounts/login/</code>, <code>/accounts/refresh/</code></td><td>Log in and refresh an access token (only needed without an API key)</td></tr>
   <tr><td><span class="m get">GET</span></td><td><code>/resources/templates/</code>, <code>/resources/loan_infos/</code>, …</td><td>Look up mention ids for prompts</td></tr>
 </table>
-<p>For full request and response schemas, see the <a href="https://prod-api.v2.areal.ai/api/v2/docs#tag/copilot">interactive API reference</a>.</p>
+<p>For full request and response schemas, see <code>copilot-agents-openapi.json</code>, which comes with this guide.</p>
 
 <footer>
   Areal.AI · Copilot Agents API integration guide · API v2 · October 2026. Questions: contact your Areal integration contact.
