@@ -25,7 +25,7 @@ public class RunCopilotTask {
             "GET",
             null
         );
-        JSONArray agentList = agents.getJSONArray("objects");
+        JSONArray agentList = agents.getJSONArray("task_groups");
         String taskGroupId = null;
         for (int i = 0; i < agentList.length(); i++) {
             JSONObject agent = agentList.getJSONObject(i);
