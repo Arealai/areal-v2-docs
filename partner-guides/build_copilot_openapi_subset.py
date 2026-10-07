@@ -2,6 +2,9 @@
 
 Every endpoint the guide mentions must be in OPERATIONS, and nothing else.
 
+Writes the JSON and, next to it, a Scalar reference page (same name, .html)
+with the spec embedded, so the two are always built together.
+
 Usage:
     curl -sS -o /tmp/openapi-uat.json https://uat-api.v2.areal.ai/api/v2/openapi.json
     python3 partner-guides/build_copilot_openapi_subset.py /tmp/openapi-uat.json \
@@ -129,5 +132,19 @@ subset = {
     ],
 }
 
-DST.write_text(json.dumps(subset, indent=2) + '\n')
+spec_json = json.dumps(subset, indent=2)
+DST.write_text(spec_json + '\n')
+
+# The spec sits inside a <script> tag, so it must not close it early.
+embedded = spec_json.replace('</', '<\\/')
+DST.with_suffix('.html').write_text(
+    '<!doctype html>\n'
+    '<html>\n'
+    '<head><meta charset="utf-8"><title>Areal Copilot Agents API</title></head>\n'
+    '<body>\n'
+    f'<script id="api-reference" type="application/json">{embedded}</script>\n'
+    '<script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>\n'
+    '</body>\n'
+    '</html>\n'
+)
 print(f'{len(paths)} paths, {sum(len(v) for v in paths.values())} operations, {len(out_schemas)} schemas')
