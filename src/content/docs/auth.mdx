@@ -7,6 +7,7 @@ import { Code, TabItem, Tabs } from '@astrojs/starlight/components';
 import auth_python_login from '../../code_samples/auth/python/login.py?raw';
 import auth_csharp_login from '../../code_samples/auth/csharp/login.cs?raw';
 import auth_java_login from '../../code_samples/auth/java/login.java?raw';
+import auth_javascript_api_key from '../../code_samples/auth/javascript/api_key.js?raw';
 
 Areal API support multiple authentication mechanisms:
 
@@ -69,8 +70,18 @@ sequenceDiagram
   </TabItem>
 </Tabs>
 
+## API Key
 
+Use an API key for scripts and service-to-service calls (no login cookies). Send the same key on every request in one of these headers:
 
+- `Authorization: Bearer <api_key>` (recommended)
+- `key: <api_key>`
+
+<Tabs>
+  <TabItem label="JavaScript">
+    <Code code={auth_javascript_api_key} lang="js" title="API Key" />
+  </TabItem>
+</Tabs>
 
 ## Security Highlights
 
