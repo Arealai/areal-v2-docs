@@ -89,6 +89,17 @@ while todo:
     todo.extend(ref_re.findall(json.dumps(schemas[name])))
 
 out_schemas = {name: copy.deepcopy(schemas[name]) for name in sorted(needed)}
+# The partner integrates through Byte only.
+mention_type = out_schemas['AttrsSchema']['properties']['type']
+mention_type['enum'] = [
+    t for t in mention_type['enum'] if t not in {'encompass', 'meridianlink'}
+]
+plan_result = out_schemas['ExecutePlanResponseSchema']
+for field in ('is_encompass_update_task', 'is_encompass_update_accepted'):
+    plan_result['properties'].pop(field, None)
+    if field in plan_result.get('required', []):
+        plan_result['required'].remove(field)
+
 user_list = out_schemas['UserInOrganization']
 user_list['properties'].pop('external_users', None)
 if 'required' in user_list:
