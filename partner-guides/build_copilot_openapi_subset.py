@@ -19,8 +19,6 @@ DST = Path(sys.argv[2])
 
 PREFIX = '/api/v2'
 OPERATIONS = {
-    '/accounts/login/': ['post'],
-    '/accounts/refresh/': ['post'],
     '/sessions/': ['get'],
     '/profiles/users/': ['get'],
     '/copilot/task-group/': ['get'],
@@ -37,14 +35,12 @@ OPERATIONS = {
     '/resources/templates/': ['get'],
     '/resources/templates/{template_id}/components/': ['get'],
     '/resources/loan_infos/': ['get'],
-    '/resources/encompass_fields/': ['get'],
     '/resources/byte_fields/': ['get'],
-    '/resources/meridianlink_fields/': ['get'],
     '/resources/selectors/': ['get'],
     '/resources/docusign_templates/': ['get'],
     '/profiles/admin/organization/email_templates/': ['get'],
 }
-SECURITY_SCHEMES = ['ArealAPIKeyBearer', 'ArealAPIKeyHeader', 'JWTBearer']
+SECURITY_SCHEMES = ['ArealAPIKeyBearer', 'ArealAPIKeyHeader']
 
 spec = json.loads(SRC.read_text())
 schemas = spec['components']['schemas']
@@ -118,7 +114,7 @@ subset = {
         },
     },
     'tags': [
-        t for t in spec.get('tags', []) if t['name'] in {'accounts', 'sessions', 'profiles', 'copilot', 'resources'}
+        t for t in spec.get('tags', []) if t['name'] in {'sessions', 'profiles', 'copilot', 'resources'}
     ],
 }
 

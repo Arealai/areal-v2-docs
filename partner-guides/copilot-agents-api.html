@@ -234,14 +234,12 @@
 <pre><code>Authorization: Bearer &lt;api_key&gt;      <span class="c"># recommended</span>
 key: &lt;api_key&gt;</code></pre>
 <p>The key acts as one user in your organization. That user can only see agents, tasks and loans that belong to its organization.</p>
-<p>Interactive clients can also log in with <code>POST /accounts/login/</code> and use the returned access token as <code>Authorization: Bearer &lt;access_token&gt;</code>. Access tokens expire and must be refreshed with <code>POST /accounts/refresh/</code>, so API keys are simpler for integrations.</p>
-
 <h3 id="errors">Errors</h3>
 <p>Error responses have a JSON body with a <code>message</code> field:</p>
 <pre><code>{ <span class="k">"message"</span>: <span class="s">"Unauthorized access attempt to session"</span> }</code></pre>
 <table>
   <tr><th style="width:14%">Status</th><th>When it happens</th></tr>
-  <tr><td><code>400</code></td><td>A business rule failed, for example creating a second starting condition, or overriding a task that has not failed. Also returned for an invalid or expired token.</td></tr>
+  <tr><td><code>400</code></td><td>A business rule failed, for example creating a second starting condition, or overriding a task that has not failed.</td></tr>
   <tr><td><code>401</code></td><td>No valid credentials were sent.</td></tr>
   <tr><td><code>403</code></td><td>The agent, task or loan belongs to another organization.</td></tr>
   <tr><td><code>404</code></td><td>The id doesn't exist or isn't a valid UUID.</td></tr>
@@ -680,9 +678,9 @@ key: &lt;api_key&gt;</code></pre>
   <tr><td><code>template</code></td><td>A document type (for example Note, Closing Disclosure)</td><td><code>GET /resources/templates/?search=…</code> → <code>objects[].id</code></td></tr>
   <tr><td><code>component</code></td><td>A field extracted from a document type</td><td><code>GET /resources/templates/{template_id}/components/</code> → <code>objects[].id</code></td></tr>
   <tr><td><code>loan_info</code></td><td>A loan-level attribute</td><td><code>GET /resources/loan_infos/?search=…</code> → <code>objects[].id</code></td></tr>
-  <tr><td><code>encompass</code></td><td>An Encompass field</td><td><code>GET /resources/encompass_fields/</code>. The id is the Encompass field id.</td></tr>
+  <tr><td><code>encompass</code></td><td>An Encompass field</td><td>The Encompass field id, for example <code>4000</code> or <code>CX.ISECLOSING</code></td></tr>
   <tr><td><code>byte</code></td><td>A Byte field</td><td><code>GET /resources/byte_fields/</code></td></tr>
-  <tr><td><code>meridianlink</code></td><td>A MeridianLink field</td><td><code>GET /resources/meridianlink_fields/</code></td></tr>
+  <tr><td><code>meridianlink</code></td><td>A MeridianLink field</td><td>The MeridianLink field id</td></tr>
   <tr><td><code>selector</code></td><td>A document selector, such as which version of a document to use</td><td><code>GET /resources/selectors/</code></td></tr>
   <tr><td><code>email</code></td><td>An email template to send</td><td><code>GET /profiles/admin/organization/email_templates/</code></td></tr>
   <tr><td><code>loan_contacts</code></td><td>A loan contact by role. The email address is looked up on the loan at run time.</td><td><code>GET /copilot/loan-contact-roles/</code> → <code>roles[].key</code> (for example <code>closer</code>)</td></tr>
@@ -792,9 +790,7 @@ print(<span class="s">"Agent status:"</span>, detail[<span class="s">"status"</s
   <tr><td><span class="m post">POST</span></td><td><code>/copilot/task/{task_id}/assign_user/</code></td><td>Assign or unassign a user on a result</td></tr>
   <tr><td><span class="m get">GET</span></td><td><code>/copilot/loan-contact-roles/</code></td><td>Loan contact roles for <code>loan_contacts</code> mentions</td></tr>
   <tr><td><span class="m get">GET</span></td><td><code>/sessions/?search=</code></td><td>Find a loan's <code>session_id</code></td></tr>
-  <tr><td><span class="m get">GET</span></td><td><code>/profiles/users/</code></td><td>List your organization's users, for <code>assign_user</code></td></tr>
-  <tr><td><span class="m post">POST</span></td><td><code>/accounts/login/</code>, <code>/accounts/refresh/</code></td><td>Log in and refresh an access token (only needed without an API key)</td></tr>
-  <tr><td><span class="m get">GET</span></td><td><code>/resources/templates/</code>, <code>/resources/loan_infos/</code>, …</td><td>Look up mention ids for prompts</td></tr>
+  <tr><td><span class="m get">GET</span></td><td><code>/profiles/users/</code></td><td>List your organization's users, for <code>assign_user</code></td></tr>  <tr><td><span class="m get">GET</span></td><td><code>/resources/templates/</code>, <code>/resources/loan_infos/</code>, …</td><td>Look up mention ids for prompts</td></tr>
 </table>
 <p>For full request and response schemas, see <code>copilot-agents-openapi.json</code>, which comes with this guide.</p>
 
