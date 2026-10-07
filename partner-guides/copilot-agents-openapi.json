@@ -12,72 +12,6 @@
     }
   ],
   "paths": {
-    "/api/v2/accounts/login/": {
-      "post": {
-        "operationId": "api_views_accounts_auth_login",
-        "summary": "Login",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LoginResponse"
-                }
-              }
-            }
-          }
-        },
-        "description": "Login allows you to authenticate with the Areal API.\nAfter successful login, you will receive an access token and a refresh token.\nThey will be set as cookies in the response.\nAfter that, your subsequent requests to the API should\ninclude the access token in the Cookie header or Authorization header.\nIn case of expiration, you can use the refresh token to get a new access token.\nIf MFA is enabled, you will receive a pre-auth token.\nYou can use the pre-auth token to complete the login process by calling the /mfa/verify/ endpoint.",
-        "tags": [
-          "accounts"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LoginRequest"
-              }
-            }
-          },
-          "required": true
-        }
-      }
-    },
-    "/api/v2/accounts/refresh/": {
-      "post": {
-        "operationId": "api_views_accounts_auth_refresh",
-        "summary": "Refresh",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RefreshTokenResponse"
-                }
-              }
-            }
-          }
-        },
-        "description": "Refresh will generate a new access token and refresh token.\nOld ones will be invalidated. New cookies will be set in the response.",
-        "tags": [
-          "accounts"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RefreshTokenRequest"
-              }
-            }
-          },
-          "required": true
-        }
-      }
-    },
     "/api/v2/sessions/": {
       "get": {
         "operationId": "api_views_sessions_get_sessions",
@@ -574,9 +508,6 @@
         ],
         "security": [
           {
-            "JWTBearer": []
-          },
-          {
             "ArealAPIKeyBearer": []
           },
           {
@@ -606,9 +537,6 @@
           "profiles"
         ],
         "security": [
-          {
-            "JWTBearer": []
-          },
           {
             "ArealAPIKeyBearer": []
           },
@@ -656,9 +584,6 @@
           "copilot"
         ],
         "security": [
-          {
-            "JWTBearer": []
-          },
           {
             "ArealAPIKeyBearer": []
           },
@@ -708,9 +633,6 @@
           "copilot"
         ],
         "security": [
-          {
-            "JWTBearer": []
-          },
           {
             "ArealAPIKeyBearer": []
           },
@@ -768,9 +690,6 @@
           "required": true
         },
         "security": [
-          {
-            "JWTBearer": []
-          },
           {
             "ArealAPIKeyBearer": []
           },
@@ -911,9 +830,6 @@
         ],
         "security": [
           {
-            "JWTBearer": []
-          },
-          {
             "ArealAPIKeyBearer": []
           },
           {
@@ -956,9 +872,6 @@
           "required": true
         },
         "security": [
-          {
-            "JWTBearer": []
-          },
           {
             "ArealAPIKeyBearer": []
           },
@@ -1010,9 +923,6 @@
         },
         "security": [
           {
-            "JWTBearer": []
-          },
-          {
             "ArealAPIKeyBearer": []
           },
           {
@@ -1061,9 +971,6 @@
           "copilot"
         ],
         "security": [
-          {
-            "JWTBearer": []
-          },
           {
             "ArealAPIKeyBearer": []
           },
@@ -1123,9 +1030,6 @@
         },
         "security": [
           {
-            "JWTBearer": []
-          },
-          {
             "ArealAPIKeyBearer": []
           },
           {
@@ -1173,9 +1077,6 @@
         ],
         "security": [
           {
-            "JWTBearer": []
-          },
-          {
             "ArealAPIKeyBearer": []
           },
           {
@@ -1219,9 +1120,6 @@
         },
         "security": [
           {
-            "JWTBearer": []
-          },
-          {
             "ArealAPIKeyBearer": []
           },
           {
@@ -1264,9 +1162,6 @@
           "required": true
         },
         "security": [
-          {
-            "JWTBearer": []
-          },
           {
             "ArealAPIKeyBearer": []
           },
@@ -1312,9 +1207,6 @@
         },
         "security": [
           {
-            "JWTBearer": []
-          },
-          {
             "ArealAPIKeyBearer": []
           },
           {
@@ -1358,9 +1250,6 @@
         },
         "security": [
           {
-            "JWTBearer": []
-          },
-          {
             "ArealAPIKeyBearer": []
           },
           {
@@ -1390,9 +1279,6 @@
           "copilot"
         ],
         "security": [
-          {
-            "JWTBearer": []
-          },
           {
             "ArealAPIKeyBearer": []
           },
@@ -1513,9 +1399,6 @@
           "resources"
         ],
         "security": [
-          {
-            "JWTBearer": []
-          },
           {
             "ArealAPIKeyBearer": []
           },
@@ -1661,9 +1544,6 @@
           "resources"
         ],
         "security": [
-          {
-            "JWTBearer": []
-          },
           {
             "ArealAPIKeyBearer": []
           },
@@ -1818,9 +1698,6 @@
         ],
         "security": [
           {
-            "JWTBearer": []
-          },
-          {
             "ArealAPIKeyBearer": []
           },
           {
@@ -1877,9 +1754,6 @@
           "resources"
         ],
         "security": [
-          {
-            "JWTBearer": []
-          },
           {
             "ArealAPIKeyBearer": []
           },
@@ -1938,9 +1812,6 @@
         ],
         "security": [
           {
-            "JWTBearer": []
-          },
-          {
             "ArealAPIKeyBearer": []
           },
           {
@@ -1998,9 +1869,6 @@
         ],
         "security": [
           {
-            "JWTBearer": []
-          },
-          {
             "ArealAPIKeyBearer": []
           },
           {
@@ -2031,9 +1899,6 @@
           "resources"
         ],
         "security": [
-          {
-            "JWTBearer": []
-          },
           {
             "ArealAPIKeyBearer": []
           },
@@ -2156,9 +2021,6 @@
         ],
         "security": [
           {
-            "JWTBearer": []
-          },
-          {
             "ArealAPIKeyBearer": []
           },
           {
@@ -2188,9 +2050,6 @@
           "profiles"
         ],
         "security": [
-          {
-            "JWTBearer": []
-          },
           {
             "ArealAPIKeyBearer": []
           },
@@ -3100,64 +2959,6 @@
         "title": "LoanMetadata",
         "type": "object"
       },
-      "LoginRequest": {
-        "properties": {
-          "username": {
-            "examples": [
-              "johndoe"
-            ],
-            "title": "Username",
-            "type": "string"
-          },
-          "password": {
-            "examples": [
-              "MyStrongPassword123!"
-            ],
-            "title": "Password",
-            "type": "string"
-          }
-        },
-        "required": [
-          "username",
-          "password"
-        ],
-        "title": "LoginRequest",
-        "type": "object"
-      },
-      "LoginResponse": {
-        "properties": {
-          "access_token": {
-            "title": "Access Token",
-            "type": "string"
-          },
-          "refresh_token": {
-            "title": "Refresh Token",
-            "type": "string"
-          },
-          "requires_mfa": {
-            "default": false,
-            "title": "Requires Mfa",
-            "type": "boolean"
-          },
-          "pre_auth_token": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Pre Auth Token"
-          }
-        },
-        "required": [
-          "access_token",
-          "refresh_token"
-        ],
-        "title": "LoginResponse",
-        "type": "object"
-      },
       "MentionSchema": {
         "properties": {
           "type": {
@@ -3438,52 +3239,6 @@
           "accessible_organizations"
         ],
         "title": "ProfileSchema",
-        "type": "object"
-      },
-      "RefreshTokenRequest": {
-        "properties": {
-          "refresh_token": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Refresh Token"
-          },
-          "access_token": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Access Token"
-          }
-        },
-        "title": "RefreshTokenRequest",
-        "type": "object"
-      },
-      "RefreshTokenResponse": {
-        "properties": {
-          "access_token": {
-            "title": "Access Token",
-            "type": "string"
-          },
-          "refresh_token": {
-            "title": "Refresh Token",
-            "type": "string"
-          }
-        },
-        "required": [
-          "access_token",
-          "refresh_token"
-        ],
-        "title": "RefreshTokenResponse",
         "type": "object"
       },
       "RelatedDocumentSchema": {
@@ -4318,10 +4073,6 @@
         "type": "apiKey",
         "in": "header",
         "name": "key"
-      },
-      "JWTBearer": {
-        "type": "http",
-        "scheme": "bearer"
       }
     }
   },
