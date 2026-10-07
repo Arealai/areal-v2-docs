@@ -25,7 +25,7 @@ agentsResponse.EnsureSuccessStatusCode();
 
 var agentsJson = JsonDocument.Parse(await agentsResponse.Content.ReadAsStringAsync());
 string? taskGroupId = null;
-foreach (var agent in agentsJson.RootElement.GetProperty("objects").EnumerateArray())
+foreach (var agent in agentsJson.RootElement.GetProperty("task_groups").EnumerateArray())
 {
     taskGroupId = agent.GetProperty("id").GetString();
     var name = agent.GetProperty("name").GetString();

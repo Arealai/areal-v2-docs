@@ -11,7 +11,7 @@ agents = client.get(
     params={'session_id': SESSION_ID},
 ).json()
 
-for agent in agents['objects']:
+for agent in agents['task_groups']:
     print(f"{agent['id']} - {agent['name']} - {agent['status']}")
     task_group_id = agent['id']
 
