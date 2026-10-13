@@ -28,20 +28,11 @@ OPERATIONS = {
     '/copilot/task-group/{task_group_id}/': ['get', 'patch'],
     '/copilot/task-group/{task_group_id}/tasks/': ['get'],
     '/copilot/task-group/{task_group_id}/execute/': ['post'],
-    '/copilot/task/': ['post'],
     '/copilot/task/{task_id}/': ['get', 'patch', 'delete'],
     '/copilot/task/{task_id}/change-status/': ['post'],
     '/copilot/task/{task_id}/execute/': ['post'],
     '/copilot/{task_id}/suppress/': ['post'],
     '/copilot/task/{task_id}/assign_user/': ['post'],
-    '/copilot/loan-contact-roles/': ['get'],
-    '/resources/templates/': ['get'],
-    '/resources/templates/{template_id}/components/': ['get'],
-    '/resources/loan_infos/': ['get'],
-    '/resources/byte_fields/': ['get'],
-    '/resources/selectors/': ['get'],
-    '/resources/docusign_templates/': ['get'],
-    '/profiles/admin/organization/email_templates/': ['get'],
 }
 SECURITY_SCHEMES = ['ArealAPIKeyBearer', 'ArealAPIKeyHeader']
 
@@ -73,9 +64,8 @@ DESCRIPTIONS = {
         "Override a failed task result on one loan as 'success' or 'n/a', or "
         'remove an existing override. The caller becomes the assigned user.'
     ),
-    ('/resources/loan_infos/', 'get'): (
-        'Lists loan-level attributes with their id and name, for loan_info '
-        'mentions in prompts. With session_id, includes the value on that loan.'
+    ('/copilot/task/{task_id}/', 'patch'): (
+        "Rename a task. Doesn't change its plan or results."
     ),
 }
 for (path, method), text in DESCRIPTIONS.items():
@@ -92,6 +82,10 @@ while todo:
     todo.extend(ref_re.findall(json.dumps(schemas[name])))
 
 out_schemas = {name: copy.deepcopy(schemas[name]) for name in sorted(needed)}
+# Partners run and rename the tasks they have; they don't write prompts.
+edit_task = out_schemas['EditTaskSchema']
+edit_task['properties'] = {'name': {'type': 'string', 'title': 'Name'}}
+edit_task['required'] = ['name']
 # The partner integrates through Byte only.
 mention_type = out_schemas['AttrsSchema']['properties']['type']
 mention_type['enum'] = [
@@ -119,7 +113,10 @@ subset = {
             'Copilot Agents API integration guide.'
         ),
     },
-    'servers': [{'url': 'https://uat-api.v2.areal.ai', 'description': 'UAT'}],
+    'servers': [
+        {'url': 'https://prod-api.v2.areal.ai', 'description': 'Production'},
+        {'url': 'https://uat-api.v2.areal.ai', 'description': 'UAT'},
+    ],
     'paths': paths,
     'components': {
         'schemas': out_schemas,
@@ -128,7 +125,7 @@ subset = {
         },
     },
     'tags': [
-        t for t in spec.get('tags', []) if t['name'] in {'sessions', 'profiles', 'copilot', 'resources'}
+        t for t in spec.get('tags', []) if t['name'] in {'sessions', 'profiles', 'copilot'}
     ],
 }
 

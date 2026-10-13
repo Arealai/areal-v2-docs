@@ -155,9 +155,8 @@
     </li>
     <li><a href="#modify-tasks">4. Modify tasks</a>
       <ol>
-        <li><a href="#edit-task">Edit name or prompt</a></li>
+        <li><a href="#edit-task">Rename a task</a></li>
         <li><a href="#activate-task">Activate / deactivate</a></li>
-        <li><a href="#create-task">Create a task</a></li>
         <li><a href="#delete-task">Delete a task</a></li>
         <li><a href="#run-task">Run a task or agent</a></li>
         <li><a href="#override-task">Override a failed result</a></li>
@@ -165,7 +164,14 @@
         <li><a href="#edit-agent">Edit agent settings</a></li>
       </ol>
     </li>
-    <li><a href="#prompt-format">Prompt format</a></li>
+    <li><a href="#webhooks">5. Webhooks</a>
+      <ol>
+        <li><a href="#webhook-setup">Setup and delivery</a></li>
+        <li><a href="#webhook-signature">Verifying the signature</a></li>
+        <li><a href="#webhook-when">When it is sent</a></li>
+        <li><a href="#webhook-payload">Payload</a></li>
+      </ol>
+    </li>
     <li><a href="#example">End-to-end example</a></li>
     <li><a href="#dashboard-map">Dashboard ↔ API map</a></li>
     <li><a href="#reference">Endpoint reference</a></li>
@@ -182,13 +188,14 @@
 
 <p>Copilot runs natural-language checks and automations against the documents and data of a mortgage loan. An <strong>agent</strong> is a named set of <strong>tasks</strong>. Each task holds a prompt, and when the prompt is saved Areal turns it into a step-by-step <strong>plan</strong>. Running a task executes that plan against one loan and stores a result for that loan.</p>
 
-<p>This guide covers four integration jobs:</p>
+<p>This guide covers five integration jobs:</p>
 <table>
   <tr><th>Job</th><th>Main endpoint</th></tr>
   <tr><td><a href="#list-agents">1. List agents</a></td><td><code>GET /copilot/task-group/</code></td></tr>
   <tr><td><a href="#agent-status">2. Pull agent status</a></td><td><code>GET /copilot/task-group/</code> or <code>GET /copilot/task-group/{id}/</code></td></tr>
   <tr><td><a href="#pull-tasks">3. Pull tasks for each agent</a></td><td><code>GET /copilot/task-group/{id}/tasks/</code></td></tr>
   <tr><td><a href="#modify-tasks">4. Modify tasks for each agent</a></td><td><code>PATCH /copilot/task/{id}/</code> and related endpoints</td></tr>
+  <tr><td><a href="#webhooks">5. Get notified when an agent run ends</a></td><td><code>COPILOT_TASK_GROUP_EXECUTED</code> webhook</td></tr>
 </table>
 
 <div class="flow">
@@ -224,8 +231,10 @@
 <h3 id="base-url">Base URL</h3>
 <table>
   <tr><th>Environment</th><th>Base URL</th></tr>
+  <tr><td>Production</td><td><code>https://prod-api.v2.areal.ai/api/v2</code></td></tr>
   <tr><td>UAT</td><td><code>https://uat-api.v2.areal.ai/api/v2</code></td></tr>
 </table>
+<p>The examples in this guide use UAT. Production and UAT are separate environments, each with its own API keys, loans, agents and webhook settings. Build and test against UAT, then switch the base URL and API key to go live.</p>
 <p>All paths in this guide are relative to the base URL. Requests and responses are JSON. Send <code>Content-Type: application/json</code> on requests that have a body. Paths end with a trailing slash; keep it.</p>
 <p>Full request and response schemas for every endpoint in this guide are in the OpenAPI file that comes with it, <code>copilot-agents-openapi.json</code>. <code>copilot-agents-openapi.html</code> shows the same file as a browsable reference; it needs an internet connection to load.</p>
 
@@ -239,7 +248,7 @@ key: &lt;api_key&gt;</code></pre>
 <pre><code>{ <span class="k">"message"</span>: <span class="s">"Unauthorized access attempt to session"</span> }</code></pre>
 <table>
   <tr><th style="width:14%">Status</th><th>When it happens</th></tr>
-  <tr><td><code>400</code></td><td>A business rule failed, for example creating a second starting condition, or overriding a task that has not failed.</td></tr>
+  <tr><td><code>400</code></td><td>A business rule failed, for example overriding a task that has not failed, or assigning a user before the task has a result.</td></tr>
   <tr><td><code>401</code></td><td>No valid credentials were sent.</td></tr>
   <tr><td><code>403</code></td><td>The agent, task or loan belongs to another organization.</td></tr>
   <tr><td><code>404</code></td><td>The id doesn't exist or isn't a valid UUID.</td></tr>
@@ -370,7 +379,8 @@ key: &lt;api_key&gt;</code></pre>
 }</code></pre>
 
 <h3 id="polling">Tracking a run</h3>
-<p>Running an agent or a task returns right away, and the work continues in the background. A run usually takes from a few seconds to a few minutes, depending on how many steps the plan has and whether it writes to your LOS. To follow a run:</p>
+<p>Running an agent or a task returns right away, and the work continues in the background. A run usually takes from a few seconds to a few minutes, depending on how many steps the plan has and whether it writes to your LOS.</p>
+<p>The simplest way to learn that an agent run has finished is the <a href="#webhooks"><code>COPILOT_TASK_GROUP_EXECUTED</code> webhook</a>: Areal sends it once per agent run, with every task's result. Areal doesn't retry a webhook delivery that fails, so keep polling as a fallback. To follow a run by polling:</p>
 <ol>
   <li>Start the run (see <a href="#run-task">Run a task or agent</a>).</li>
   <li>Poll <code>GET /copilot/task-group/{task_group_id}/tasks/?session_id=…</code> every 5 to 10 seconds.</li>
@@ -380,7 +390,7 @@ key: &lt;api_key&gt;</code></pre>
 <p>If the agent has a starting condition, poll <a href="#agent-detail">agent detail</a> first. When <code>starting_condition.results.status</code> becomes <code>success</code>, Areal starts the other tasks; if it becomes <code>failed</code>, the other tasks don't run. Set an overall timeout on your polling (for example 15 minutes) and back off when you get <code>5xx</code> responses.</p>
 <div class="callout">
   <strong>Real-time updates</strong>
-  The dashboard gets live <code>COPILOT_TASK_CREATED</code>, <code>COPILOT_TASK_UPDATED</code> and <code>COPILOT_TASK_DELETED</code> messages over a WebSocket. That connection is tied to a browser login session, so server-to-server integrations should poll as described above.
+  The dashboard gets live <code>COPILOT_TASK_CREATED</code>, <code>COPILOT_TASK_UPDATED</code> and <code>COPILOT_TASK_DELETED</code> messages over a WebSocket. That connection is tied to a browser login session, so server-to-server integrations should use the <a href="#webhooks">webhook</a> and poll as described above.
 </div>
 
 <!-- ================================================================== -->
@@ -411,7 +421,7 @@ key: &lt;api_key&gt;</code></pre>
       <span class="k">"name"</span>: <span class="s">"Note is signed"</span>,
       <span class="k">"status"</span>: <span class="s">"active"</span>,
       <span class="k">"prompt"</span>: <span class="s">"Check if all signature pages are signed in [[/template/Note]]"</span>,
-      <span class="k">"formatted_prompt"</span>: { <span class="k">"type"</span>: <span class="s">"doc"</span>, <span class="k">"content"</span>: [ <span class="c">/* see Prompt format */</span> ] },
+      <span class="k">"formatted_prompt"</span>: { <span class="k">"type"</span>: <span class="s">"doc"</span>, <span class="k">"content"</span>: [ <span class="c">/* rich-text prompt */</span> ] },
       <span class="k">"is_post_run_action"</span>: false,
       <span class="k">"created_at"</span>: <span class="s">"2026-08-12 09:15:40.101+00:00"</span>,
       <span class="k">"updated_at"</span>: <span class="s">"2026-09-30 17:44:02.553+00:00"</span>,
@@ -458,8 +468,8 @@ key: &lt;api_key&gt;</code></pre>
   <tr><td><code>id</code></td><td>Task id.</td></tr>
   <tr><td><code>name</code></td><td>Display name.</td></tr>
   <tr><td><code>status</code></td><td><code>active</code> or <code>draft</code>. Only active tasks run when the agent runs. Configuration only; this is not the run result.</td></tr>
-  <tr><td><code>formatted_prompt</code></td><td>The prompt as structured rich text, including references to documents and fields. Send this format when you create or edit a task. See <a href="#prompt-format">Prompt format</a>.</td></tr>
-  <tr><td><code>prompt</code></td><td>Read-only plain-text version of the prompt, with references written as <code>[[/type/…]]</code>.</td></tr>
+  <tr><td><code>formatted_prompt</code></td><td>The prompt as structured rich text, as the dashboard's prompt editor stores it, including references to documents and fields.</td></tr>
+  <tr><td><code>prompt</code></td><td>Plain-text version of the prompt, with references to documents and fields written as <code>[[/type/…]]</code>.</td></tr>
   <tr><td><code>is_post_run_action</code></td><td><code>true</code> only for the agent's post-run action.</td></tr>
   <tr><td><code>dependencies</code></td><td>Names of the document types this task read on its latest run.</td></tr>
   <tr><td><code>trigger_document_map</code></td><td>For each reference in the prompt, the document on this loan that was used.</td></tr>
@@ -500,13 +510,12 @@ key: &lt;api_key&gt;</code></pre>
 <!-- ================================================================== -->
 <h2 id="modify-tasks">4. Modify tasks</h2>
 
-<p>Changes to a task's name, prompt or active/draft state apply to the agent everywhere in your organization, not just to one loan. Running a task, overriding a result and assigning a user apply only to the loan you pass.</p>
+<p>These calls work with the agents and tasks already set up for your organization. Changes to a task's name or active/draft state apply to the agent everywhere in your organization, not just to one loan. Running a task, overriding a result and assigning a user apply only to the loan you pass.</p>
 
 <table>
   <tr><th style="width:34%">Change</th><th>Endpoint</th><th style="width:20%">Applies to</th></tr>
-  <tr><td><a href="#edit-task">Rename or change the prompt</a></td><td><code>PATCH /copilot/task/{task_id}/</code></td><td>All loans</td></tr>
+  <tr><td><a href="#edit-task">Rename a task</a></td><td><code>PATCH /copilot/task/{task_id}/</code></td><td>All loans</td></tr>
   <tr><td><a href="#activate-task">Activate or deactivate</a></td><td><code>POST /copilot/task/{task_id}/change-status/</code></td><td>All loans</td></tr>
-  <tr><td><a href="#create-task">Add a task</a></td><td><code>POST /copilot/task/</code></td><td>All loans</td></tr>
   <tr><td><a href="#delete-task">Remove a task</a></td><td><code>DELETE /copilot/task/{task_id}/</code></td><td>All loans</td></tr>
   <tr><td><a href="#run-task">Run a task or the whole agent</a></td><td><code>POST /copilot/task/{task_id}/execute/</code><br><code>POST /copilot/task-group/{id}/execute/</code></td><td>One loan</td></tr>
   <tr><td><a href="#override-task">Override a failed result</a></td><td><code>POST /copilot/{task_id}/suppress/</code></td><td>One loan</td></tr>
@@ -515,75 +524,24 @@ key: &lt;api_key&gt;</code></pre>
 </table>
 
 <!-- ---------------- edit -->
-<h3 id="edit-task">Edit a task's name or prompt</h3>
+<h3 id="edit-task">Rename a task</h3>
 <div class="endpoint"><span class="m patch">PATCH</span>/copilot/task/{task_id}/?session_id={session_id}</div>
 <table>
   <tr><th style="width:22%">Body field</th><th style="width:16%">Type</th><th>Description</th></tr>
-  <tr><td><code>name</code></td><td>string, optional</td><td>New display name.</td></tr>
-  <tr><td><code>prompt</code></td><td>object, optional</td><td>New prompt in <a href="#prompt-format">formatted prompt</a> format. Areal generates a new plan from it.</td></tr>
+  <tr><td><code>name</code></td><td>string</td><td>New display name.</td></tr>
 </table>
-<p>Leave out any field you don't want to change. <code>session_id</code> is required: Areal uses that loan as context when it generates the plan, and the response contains the task's result on that loan.</p>
+<p><code>session_id</code> is required; the response contains the task's result on that loan. Renaming doesn't change the task's plan or results.</p>
 <pre><code>curl -s -X PATCH "https://uat-api.v2.areal.ai/api/v2/copilot/task/$TASK_ID/?session_id=$SESSION_ID" \
   -H "Authorization: Bearer $AREAL_API_KEY" \
   -H "Content-Type: application/json" \
-  --max-time 120 \
-  -d '{
-    "name": "Note is fully signed",
-    "prompt": {
-      "type": "doc",
-      "content": [{
-        "type": "paragraph",
-        "content": [
-          { "type": "text", "text": "Check that every borrower signed every signature page in " },
-          { "type": "mention", "attrs": { "type": "template", "id": "3f2e1d0c-...", "label": "Note" } }
-        ]
-      }]
-    }
-  }'</code></pre>
+  -d '{ "name": "Note is fully signed" }'</code></pre>
 <p>Returns the updated <a href="#task-object">task object</a>.</p>
-<div class="callout warn">
-  <strong>Changing the prompt is slow and doesn't re-run the task.</strong>
-  Plan generation happens inside the request and can take up to about 90 seconds, so set your client timeout to at least 120 seconds for this call and for <a href="#create-task">create</a>. The response shows <code>results.status</code> as <code>pending</code> to mark the old result as out of date, but nothing is re-run. Until you <a href="#run-task">run the task</a> again, later reads still return the result from the old prompt.
-</div>
 
 <!-- ---------------- activate -->
 <h3 id="activate-task">Activate or deactivate a task</h3>
 <div class="endpoint"><span class="m post">POST</span>/copilot/task/{task_id}/change-status/</div>
 <pre><code>{ <span class="k">"status"</span>: <span class="s">"active"</span> }   <span class="c">// or "draft"</span></code></pre>
-<p>Only <code>active</code> tasks run when the whole agent runs, whether manually or automatically. A <code>draft</code> task can still be run on its own with the <a href="#run-task">task run endpoint</a>. New tasks start as <code>draft</code>. The response is <code>{"message": "Task activated"}</code> for both values; read the task again to confirm its state.</p>
-
-<!-- ---------------- create -->
-<h3 id="create-task">Create a task</h3>
-<div class="endpoint"><span class="m post">POST</span>/copilot/task/?session_id={session_id}</div>
-<table>
-  <tr><th style="width:26%">Body field</th><th style="width:14%">Type</th><th>Description</th></tr>
-  <tr><td><code>task_group_id</code></td><td>string</td><td>The agent to add the task to.</td></tr>
-  <tr><td><code>name</code></td><td>string</td><td>Display name.</td></tr>
-  <tr><td><code>prompt</code></td><td>object</td><td><a href="#prompt-format">Formatted prompt</a>.</td></tr>
-  <tr><td><code>is_task_group_condition</code></td><td>bool, default <code>false</code></td><td>Make this the agent's starting condition. An agent can have only one.</td></tr>
-  <tr><td><code>is_post_run_action</code></td><td>bool, default <code>false</code></td><td>Make this the agent's post-run action. An agent can have only one. A task can't be both a starting condition and a post-run action.</td></tr>
-</table>
-<pre><code>curl -s -X POST "https://uat-api.v2.areal.ai/api/v2/copilot/task/?session_id=$SESSION_ID" \
-  -H "Authorization: Bearer $AREAL_API_KEY" \
-  -H "Content-Type: application/json" \
-  --max-time 120 \
-  -d '{
-    "task_group_id": "'"$AGENT_ID"'",
-    "name": "Loan amount matches CD",
-    "prompt": {
-      "type": "doc",
-      "content": [{
-        "type": "paragraph",
-        "content": [
-          { "type": "text", "text": "Compare " },
-          { "type": "mention", "attrs": { "type": "loan_info", "id": "7d6c5b4a-...", "label": "Loan Amount" } },
-          { "type": "text", "text": " with the loan amount on the " },
-          { "type": "mention", "attrs": { "type": "template", "id": "8e7f6a5b-...", "label": "Mortgage - Closing Disclosure" } }
-        ]
-      }]
-    }
-  }'</code></pre>
-<p>Returns the new <a href="#task-object">task object</a> with its generated plan. The task starts as <code>draft</code>. Its result on this loan shows <code>pending</code>, but nothing runs until you start it. To include it when the whole agent runs, <a href="#activate-task">activate it</a>. Then <a href="#run-task">run it</a> to get a result.</p>
+<p>Only <code>active</code> tasks run when the whole agent runs, whether manually or automatically. A <code>draft</code> task can still be run on its own with the <a href="#run-task">task run endpoint</a>. The response is <code>{"message": "Task activated"}</code> for both values; read the task again to confirm its state.</p>
 
 <!-- ---------------- delete -->
 <h3 id="delete-task">Delete a task</h3>
@@ -605,7 +563,7 @@ key: &lt;api_key&gt;</code></pre>
   </div>
 </div>
 <pre><code>{ <span class="k">"session_id"</span>: <span class="s">"6f1c2b0e-3a7d-4c55-9a1e-2b8f0d4e9c11"</span> }</code></pre>
-<p>Both return <code>{"message": "ok"}</code> right away, and the run continues in the background. When you run a single task, its <code>results.status</code> changes to <code>pending</code> before the response is sent. Follow the run as described in <a href="#polling">Tracking a run</a>.</p>
+<p>Both return <code>{"message": "ok"}</code> right away, and the run continues in the background. When you run a single task, its <code>results.status</code> changes to <code>pending</code> before the response is sent. Follow the run as described in <a href="#polling">Tracking a run</a>, or wait for the <a href="#webhooks">webhook</a>.</p>
 <p>A single-task run returns <code>409</code> while an automatic retry is scheduled for that task (<code>results.next_retry_at</code> is set). Wait until that time, or until the retry finishes, then try again.</p>
 <div class="callout">
   <strong>Tasks that write to Byte</strong>
@@ -650,38 +608,99 @@ key: &lt;api_key&gt;</code></pre>
 <p>Returns the agent with its status on the given loan. <code>session_id</code> is required.</p>
 
 <!-- ================================================================== -->
-<h2 id="prompt-format">Prompt format</h2>
+<h2 id="webhooks">5. Webhooks</h2>
 
-<p>When you create or edit a task, send the prompt as a <code>formatted_prompt</code> document. It is a rich-text tree made of paragraphs, where each paragraph contains plain text and <em>mentions</em>. A mention is a reference to a document type, a field or an external system. Areal uses mentions to choose which loan documents and data a task reads, so put the documents and fields a task depends on in mentions, not in plain text.</p>
+<p>Instead of polling, you can have Areal tell your server when an agent run ends. Areal sends a <code>COPILOT_TASK_GROUP_EXECUTED</code> message once each time an agent finishes running on a loan, with the latest result of each of its tasks. It doesn't send a message for each task, or when a task's plan is generated.</p>
 
-<pre><code>{
-  <span class="k">"type"</span>: <span class="s">"doc"</span>,
-  <span class="k">"content"</span>: [
-    {
-      <span class="k">"type"</span>: <span class="s">"paragraph"</span>,
-      <span class="k">"content"</span>: [
-        { <span class="k">"type"</span>: <span class="s">"text"</span>, <span class="k">"text"</span>: <span class="s">"Extract account balance from "</span> },
-        { <span class="k">"type"</span>: <span class="s">"mention"</span>, <span class="k">"attrs"</span>: { <span class="k">"type"</span>: <span class="s">"template"</span>, <span class="k">"id"</span>: <span class="s">"&lt;template id&gt;"</span>, <span class="k">"label"</span>: <span class="s">"Bank Statement"</span> } }
-      ]
-    }
-  ]
-}</code></pre>
-
-<p>Each mention's <code>label</code> is display text. <code>type</code> and <code>id</code> tell Areal what the mention refers to. Look up ids with the endpoints below:</p>
-
+<h3 id="webhook-setup">Setup and delivery</h3>
+<p>An Organization Administrator sets up the webhook in the dashboard, on the <em>Organization Settings → Gateways → Webhooks</em> page, with two values:</p>
 <table>
-  <tr><th style="width:16%">attrs.type</th><th style="width:28%">Refers to</th><th>Where to get <code>id</code></th></tr>
-  <tr><td><code>template</code></td><td>A document type (for example Note, Closing Disclosure)</td><td><code>GET /resources/templates/?search=…</code> → <code>objects[].id</code></td></tr>
-  <tr><td><code>component</code></td><td>A field extracted from a document type</td><td><code>GET /resources/templates/{template_id}/components/</code> → <code>objects[].id</code></td></tr>
-  <tr><td><code>loan_info</code></td><td>A loan-level attribute</td><td><code>GET /resources/loan_infos/?search=…</code> → <code>objects[].id</code></td></tr>
-  <tr><td><code>byte</code></td><td>A Byte field</td><td><code>GET /resources/byte_fields/</code></td></tr>
-  <tr><td><code>selector</code></td><td>A document selector, such as which version of a document to use</td><td><code>GET /resources/selectors/</code></td></tr>
-  <tr><td><code>email</code></td><td>An email template to send</td><td><code>GET /profiles/admin/organization/email_templates/</code></td></tr>
-  <tr><td><code>loan_contacts</code></td><td>A loan contact by role. The email address is looked up on the loan at run time.</td><td><code>GET /copilot/loan-contact-roles/</code> → <code>roles[].key</code> (for example <code>closer</code>)</td></tr>
-  <tr><td><code>docusign</code></td><td>A DocuSign template</td><td><code>GET /resources/docusign_templates/</code></td></tr>
+  <tr><th style="width:22%">Setting</th><th>Description</th></tr>
+  <tr><td>Endpoint</td><td>The HTTPS URL on your server that receives the messages.</td></tr>
+  <tr><td>Secret Key</td><td>A secret you choose. Areal signs every message with it, and your server uses it to <a href="#webhook-signature">verify</a> that the message came from Areal.</td></tr>
 </table>
+<p>Set up the webhook separately in each environment (UAT and Production).</p>
+<ul>
+  <li>Areal sends a <code>POST</code> request with a JSON body.</li>
+  <li>Any <code>2xx</code> response counts as delivered. Areal waits up to 5 seconds for a response, so reply right away and do any slow work afterwards.</li>
+  <li>A delivery that fails, times out or gets a non-<code>2xx</code> response <strong>is not retried</strong>. If you can't miss a result, also poll as described in <a href="#polling">Tracking a run</a>, or read the agent's tasks again after downtime on your side.</li>
+  <li>The same endpoint also receives Areal's other webhook messages, such as <code>PROCESSING_COMPLETED</code> when a loan's documents finish processing. Check the <code>type</code> field and ignore types you don't handle.</li>
+</ul>
 
-<p>The read-only <code>prompt</code> field on a task shows how Areal reads the formatted prompt, for example <code>Extract account balance from [[/template/Bank Statement]]</code>. Use it to check that your mentions were recognized.</p>
+<h3 id="webhook-signature">Verifying the signature</h3>
+<p>Each request has these headers:</p>
+<table>
+  <tr><th style="width:30%">Header</th><th>Description</th></tr>
+  <tr><td><code>X-Areal-Webhook-Signature</code></td><td>HMAC-SHA256 of the raw request body, keyed with your Secret Key, as lowercase hex.</td></tr>
+  <tr><td><code>X-Areal-Request-Id</code></td><td>Unique id of this message. The same value is in the body as <code>request_id</code>.</td></tr>
+  <tr><td><code>X-Areal-Timestamp</code></td><td>When the message was sent, in Unix seconds. The same value is in the body as <code>timestamp</code>.</td></tr>
+  <tr><td><code>Content-Type</code></td><td><code>application/json</code></td></tr>
+</table>
+<p>Compute the signature over the body bytes exactly as you received them, before you parse the JSON, and compare it with the header in constant time:</p>
+<pre><code><span class="k">import</span> hashlib, hmac
+
+
+<span class="k">def</span> is_from_areal(raw_body: bytes, signature: str, secret_key: str) -&gt; bool:
+    expected = hmac.new(secret_key.encode(), raw_body, hashlib.sha256).hexdigest()
+    <span class="k">return</span> hmac.compare_digest(expected, signature)</code></pre>
+<p>Reject the request if the signature doesn't match. To protect against replayed messages, you can also reject messages with an old <code>X-Areal-Timestamp</code> and skip any <code>X-Areal-Request-Id</code> you have already handled.</p>
+
+<h3 id="webhook-when">When it is sent</h3>
+<table>
+  <tr><th style="width:56%">When</th><th><code>data.status</code></th></tr>
+  <tr><td>Every active task has finished, and the agent has no post-run action</td><td><code>completed</code>, or <code>failed</code> if a task failed</td></tr>
+  <tr><td>The post-run action has finished</td><td><code>completed</code>, or <code>failed</code> if a task or the post-run action failed</td></tr>
+  <tr><td>The starting condition didn't pass</td><td><code>skipped</code></td></tr>
+  <tr><td>The starting condition couldn't run because of an error</td><td><code>failed</code>, with the error in <code>data.error</code></td></tr>
+</table>
+<p>The message is sent however the run started: automatically after documents finish processing, from the dashboard, or through the <a href="#run-task">run endpoints</a>. Running a single active task can also send it: when that task finishes and no other active task is <code>pending</code>, the agent's run is complete again, so Areal runs the post-run action (if there is one) and sends the message.</p>
+
+<h3 id="webhook-payload">Payload</h3>
+<pre><code>{
+  <span class="k">"type"</span>: <span class="s">"COPILOT_TASK_GROUP_EXECUTED"</span>,
+  <span class="k">"request_id"</span>: <span class="s">"8e8a2f4c-1b7d-4c3e-9a6f-2d5b7c9e1f3a"</span>,
+  <span class="k">"timestamp"</span>: 1791382931,
+  <span class="k">"meta"</span>: {
+    <span class="k">"upload_session_id"</span>: <span class="s">"6f1c2b0e-3a7d-4c55-9a1e-2b8f0d4e9c11"</span>,
+    <span class="k">"task_group_id"</span>: <span class="s">"0b9e8f5c-1d2a-4e3b-8c7d-6a5f4e3d2c1b"</span>
+  },
+  <span class="k">"data"</span>: {
+    <span class="k">"status"</span>: <span class="s">"failed"</span>,
+    <span class="k">"error"</span>: null,
+    <span class="k">"tasks"</span>: [
+      {
+        <span class="k">"task_id"</span>: <span class="s">"9c8b7a6d-5e4f-4a3b-9c2d-1e0f9a8b7c6d"</span>,
+        <span class="k">"name"</span>: <span class="s">"Note is signed"</span>,
+        <span class="k">"status"</span>: <span class="s">"failed"</span>,
+        <span class="k">"error"</span>: <span class="s">"Page 3 is missing the co-borrower signature"</span>,
+        <span class="k">"summary"</span>: <span class="s">"1 of 2 required signatures found"</span>
+      },
+      {
+        <span class="k">"task_id"</span>: <span class="s">"1d2c3b4a-5f6e-4d7c-8b9a-0f1e2d3c4b5a"</span>,
+        <span class="k">"name"</span>: <span class="s">"Loan amount matches CD"</span>,
+        <span class="k">"status"</span>: <span class="s">"success"</span>,
+        <span class="k">"error"</span>: null,
+        <span class="k">"summary"</span>: <span class="s">"Loan amount on the CD matches the loan"</span>
+      }
+    ],
+    <span class="k">"post_run_action"</span>: null
+  }
+}</code></pre>
+<table>
+  <tr><th style="width:28%">Field</th><th>Description</th></tr>
+  <tr><td><code>type</code></td><td>Always <code>COPILOT_TASK_GROUP_EXECUTED</code> for this message.</td></tr>
+  <tr><td><code>request_id</code>, <code>timestamp</code></td><td>Same values as the <code>X-Areal-Request-Id</code> and <code>X-Areal-Timestamp</code> headers.</td></tr>
+  <tr><td><code>meta.upload_session_id</code></td><td>The loan's <code>session_id</code>.</td></tr>
+  <tr><td><code>meta.task_group_id</code></td><td>The agent that ran.</td></tr>
+  <tr><td><code>data.status</code></td><td><code>completed</code>, <code>failed</code> or <code>skipped</code>. See <a href="#webhook-when">When it is sent</a>. This is the outcome of this run, not the <a href="#agent-status-values">agent status</a> from the list call.</td></tr>
+  <tr><td><code>data.error</code></td><td>The starting condition's error, when it couldn't run. Otherwise <code>null</code>. Task errors are on each task.</td></tr>
+  <tr><td><code>data.tasks</code></td><td>The latest result of each active task on this loan. A task that has never run on the loan is left out.</td></tr>
+  <tr><td><code>data.post_run_action</code></td><td>The post-run action's result, or <code>null</code> if the agent doesn't have one.</td></tr>
+  <tr><td><code>tasks[].status</code></td><td>Same values as <a href="#run-status"><code>results.status</code></a>: <code>pending</code>, <code>success</code>, <code>failed</code> or <code>n/a</code>.</td></tr>
+  <tr><td><code>tasks[].error</code></td><td>Same as <code>results.error_message</code>, or <code>null</code>.</td></tr>
+  <tr><td><code>tasks[].summary</code></td><td>Description of the task's last executed step, or <code>null</code>.</td></tr>
+</table>
+<p>The message is a summary. For a task's plan, step results and related documents, call <a href="#pull-tasks">the tasks endpoint</a> or <a href="#single-task">a single task</a> with <code>meta.upload_session_id</code> as <code>session_id</code>.</p>
 
 <!-- ================================================================== -->
 <h2 id="example">End-to-end example (Python)</h2>
@@ -726,7 +745,7 @@ tasks = all_tasks(agent[<span class="s">"id"</span>])
 <span class="c"># 4. Modify: rename a task and make sure it is active</span>
 task = tasks[0]
 api.patch(<span class="s">f"{BASE}/copilot/task/{task['id']}/"</span>, params={<span class="s">"session_id"</span>: session_id},
-          json={<span class="s">"name"</span>: <span class="s">"Note is fully signed"</span>}, timeout=120).raise_for_status()
+          json={<span class="s">"name"</span>: <span class="s">"Note is fully signed"</span>}, timeout=30).raise_for_status()
 api.post(<span class="s">f"{BASE}/copilot/task/{task['id']}/change-status/"</span>,
          json={<span class="s">"status"</span>: <span class="s">"active"</span>}, timeout=30).raise_for_status()
 
@@ -756,9 +775,8 @@ print(<span class="s">"Agent status:"</span>, detail[<span class="s">"status"</s
   <tr><td>Task detail panel</td><td><code>GET /copilot/task/{id}/?session_id=</code></td></tr>
   <tr><td>Run button on a task</td><td><code>POST /copilot/task/{id}/execute/</code></td></tr>
   <tr><td>Run button on an agent</td><td><code>POST /copilot/task-group/{id}/execute/</code></td></tr>
-  <tr><td>Edit prompt or task name</td><td><code>PATCH /copilot/task/{id}/?session_id=</code></td></tr>
+  <tr><td>Rename a task</td><td><code>PATCH /copilot/task/{id}/?session_id=</code></td></tr>
   <tr><td><em>Activate this task</em> switch</td><td><code>POST /copilot/task/{id}/change-status/</code></td></tr>
-  <tr><td>Add task, starting condition or post-run action</td><td><code>POST /copilot/task/?session_id=</code></td></tr>
   <tr><td>Delete task</td><td><code>DELETE /copilot/task/{id}/</code></td></tr>
   <tr><td>Run status badge → <em>Override status</em> / <em>Remove override</em></td><td><code>POST /copilot/{task_id}/suppress/</code> (then run the task after removing an override)</td></tr>
   <tr><td>Assign user on a task result</td><td><code>POST /copilot/task/{id}/assign_user/</code></td></tr>
@@ -774,19 +792,17 @@ print(<span class="s">"Agent status:"</span>, detail[<span class="s">"status"</s
   <tr><td><span class="m patch">PATCH</span></td><td><code>/copilot/task-group/{task_group_id}/</code></td><td>Edit agent settings</td></tr>
   <tr><td><span class="m get">GET</span></td><td><code>/copilot/task-group/{task_group_id}/tasks/</code></td><td>List an agent's tasks with their results (paginated)</td></tr>
   <tr><td><span class="m post">POST</span></td><td><code>/copilot/task-group/{task_group_id}/execute/</code></td><td>Run the agent on a loan</td></tr>
-  <tr><td><span class="m post">POST</span></td><td><code>/copilot/task/</code></td><td>Create a task</td></tr>
   <tr><td><span class="m get">GET</span></td><td><code>/copilot/task/{task_id}/</code></td><td>Get a task with its result on a loan</td></tr>
-  <tr><td><span class="m patch">PATCH</span></td><td><code>/copilot/task/{task_id}/</code></td><td>Edit a task's name or prompt</td></tr>
+  <tr><td><span class="m patch">PATCH</span></td><td><code>/copilot/task/{task_id}/</code></td><td>Rename a task</td></tr>
   <tr><td><span class="m delete">DELETE</span></td><td><code>/copilot/task/{task_id}/</code></td><td>Delete a task</td></tr>
   <tr><td><span class="m post">POST</span></td><td><code>/copilot/task/{task_id}/change-status/</code></td><td>Set a task to active or draft</td></tr>
   <tr><td><span class="m post">POST</span></td><td><code>/copilot/task/{task_id}/execute/</code></td><td>Run one task on a loan</td></tr>
   <tr><td><span class="m post">POST</span></td><td><code>/copilot/{task_id}/suppress/</code></td><td>Override or restore a failed result</td></tr>
   <tr><td><span class="m post">POST</span></td><td><code>/copilot/task/{task_id}/assign_user/</code></td><td>Assign or unassign a user on a result</td></tr>
-  <tr><td><span class="m get">GET</span></td><td><code>/copilot/loan-contact-roles/</code></td><td>Loan contact roles for <code>loan_contacts</code> mentions</td></tr>
   <tr><td><span class="m get">GET</span></td><td><code>/sessions/?search=</code></td><td>Find a loan's <code>session_id</code></td></tr>
-  <tr><td><span class="m get">GET</span></td><td><code>/profiles/users/</code></td><td>List your organization's users, for <code>assign_user</code></td></tr>  <tr><td><span class="m get">GET</span></td><td><code>/resources/templates/</code>, <code>/resources/loan_infos/</code>, …</td><td>Look up mention ids for prompts</td></tr>
+  <tr><td><span class="m get">GET</span></td><td><code>/profiles/users/</code></td><td>List your organization's users, for <code>assign_user</code></td></tr>
 </table>
-<p>For full request and response schemas, see <code>copilot-agents-openapi.json</code>, which comes with this guide.</p>
+<p>For full request and response schemas, see <code>copilot-agents-openapi.json</code>, which comes with this guide. The <a href="#webhook-payload">webhook payload</a> is described only in this guide.</p>
 
 <footer>
   Areal.AI · Copilot Agents API integration guide · API v2 · October 2026. Questions: contact your Areal integration contact.
