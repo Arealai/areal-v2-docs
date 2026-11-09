@@ -5,6 +5,12 @@ description: Notable changes to the Areal V2 platform and this documentation.
 
 Notable changes to the Areal V2 platform and this documentation.
 
+## November 9, 2026
+
+### Changed
+
+- **Byte loans by File Name.** Sync, upload, and OneDrive routing now accept a Byte loan's File Name, the loan number shown in Byte, as well as its FileDataID. See [Link a loan to your LOS](sessions.md#link-a-loan-to-your-los). New Byte loans created from OneDrive are named `OneDrive - {File Name}`.
+
 ## September 10, 2026
 
 ### Added
