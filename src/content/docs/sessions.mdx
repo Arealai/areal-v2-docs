@@ -15,6 +15,22 @@ Create a new loan for each mortgage. In the API that is one `UploadSession` per 
 See [Processing](processing/processing.md) for more details.
 :::
 
+## Link a loan to your LOS
+
+If your organization requires every new loan to belong to a loan in your loan origination system (LOS), send that loan's identifier in `external_references` with the first upload (`POST /processing/upload/`):
+
+| LOS | Field | Value |
+|---|---|---|
+| Encompass | `encompass_loan_number` or `encompass_loan_id` | The loan number, or the loan GUID |
+| MeridianLink | `meridianlink_loan_number` | The loan number |
+| Byte | `byte_file_data_id` | The loan's **File Name** as shown in Byte (for example `TX020009784`), or its FileDataID |
+
+To pull a loan's documents from your LOS into Areal, call `POST /processing/sync_gateway_loan/` with the same identifier as `loan_number`.
+
+:::note[Byte File Names]
+A Byte File Name is matched exactly; letter case and surrounding spaces don't matter. If the value names more than one Byte loan (two loans share the File Name, or it is one loan's File Name and another loan's FileDataID), the request is refused with a message listing the loans. Send that loan's other identifier instead.
+:::
+
 ## Example Views
 
 ### List View
